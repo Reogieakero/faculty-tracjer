@@ -3,10 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   LayoutDashboard,
-  ArrowLeft,
   Mail,
   Lock,
-  BadgeCheck,
   Eye,
   EyeOff
 } from 'lucide-react';
@@ -20,7 +18,6 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [lastValidationId, setLastValidationId] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignUp = async () => {
@@ -28,25 +25,12 @@ export default function RegisterPage() {
       setIsLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
       });
-
       if (error) throw error;
-
-      sileo.success({
-        title: 'Redirecting to Google',
-        description: 'Please complete the sign-up process in the Google window.',
-        duration: 3000,
-      });
     } catch (error: any) {
       sileo.error({
-        title: 'Google Sign-up Failed',
+        title: 'Registration Failed',
         description: error.message || 'Please try again',
         duration: 4000,
       });
@@ -62,223 +46,123 @@ export default function RegisterPage() {
     { label: 'Special Char', met: /[^A-Za-z0-9]/.test(password) },
   ];
 
-  // Check if all requirements are met
   const allRequirementsMet = requirements.every(req => req.met);
-  const metCount = requirements.filter(req => req.met).length;
 
-  // Show real-time password validation using Sileo
   useEffect(() => {
     if (password.length > 0) {
-      // Dismiss previous validation toast
-      if (lastValidationId) {
-        sileo.dismiss(lastValidationId);
-      }
-
+      if (lastValidationId) sileo.dismiss(lastValidationId);
       if (allRequirementsMet) {
-        // Show success when all requirements are met (auto-hides after 3 seconds)
-        const id = sileo.success({
-          title: 'Password is secure!',
-          description: '✓ 8+ Characters • ✓ Uppercase • ✓ Number • ✓ Special Char',
-          duration: 3000  // Auto-hide after 3 seconds
-        });
+        const id = sileo.success({ title: 'Secure!', description: 'All requirements met', duration: 2000 });
         setLastValidationId(id);
       } else {
-        // Show progress while typing with met (green) and unmet (red) requirements
-        const metReqs = requirements
-          .filter(req => req.met)
-          .map(req => `✓ ${req.label}`)
-          .join(' • ');
-        
-        const unmetReqs = requirements
-          .filter(req => !req.met)
-          .map(req => `✗ ${req.label}`)
-          .join(' • ');
-        
-        const descriptionParts = [];
-        if (metReqs) descriptionParts.push(metReqs);
-        if (unmetReqs) descriptionParts.push(unmetReqs);
-        
-        // Use warning type for incomplete requirements
-        const id = sileo.warning({
-          title: 'Password Requirements',
-          description: descriptionParts.join('\n'),
-          duration: null // Keep visible while typing
-        });
+        const unmet = requirements.filter(r => !r.met).map(r => r.label).join(', ');
+        const id = sileo.warning({ title: 'Required:', description: unmet, duration: null });
         setLastValidationId(id);
       }
-    } else {
-      // Clear validation toast when password is empty
-      if (lastValidationId) {
-        sileo.dismiss(lastValidationId);
-        setLastValidationId(null);
-      }
+    } else if (lastValidationId) {
+      sileo.dismiss(lastValidationId);
     }
-  }, [password, allRequirementsMet, metCount, lastValidationId]);
-
-  const steps = [
-    { label: 'Account Info', desc: 'Email & Security', status: 'active' },
-    { label: 'Verification', desc: 'Check your inbox', status: 'pending' },
-  ];
+  }, [password, allRequirementsMet]);
 
   return (
     <div className={styles.wrapper}>
+      {/* ── LEFT PANEL (Exactly same as Login) ── */}
       <div className={styles.leftPanel}>
-        <div className={styles.gridOverlay} />
-        
+        <svg className={styles.constellationBg} viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+          <path className={styles.constelLine} d="M100,200 L300,150 L250,400 Z" fill="none" />
+          <path className={styles.constelLine} d="M300,150 L550,200 L480,350 L250,400 Z" fill="none" opacity="0.5"/>
+          <path className={styles.constelLine} d="M550,200 L800,100 L900,300 Z" fill="none"/>
+          <circle className={styles.constelNode} cx="100" cy="200" r="3" />
+          <circle className={styles.constelNode} cx="300" cy="150" r="4" />
+          <circle className={styles.constelNode} cx="550" cy="200" r="3" />
+        </svg>
+
         <div className={styles.brand}>
-          <div className={styles.brandIcon}>
-            <LayoutDashboard size={20} />
-          </div>
+          <div className={styles.brandIcon}><LayoutDashboard size={18} /></div>
           <span className={styles.brandName}>PolyTrack</span>
         </div>
 
         <div className={styles.heroContent}>
-          <div className={styles.eyebrow}>
-            <span className={styles.eyebrowDot} />
-            Institutional Access
-          </div>
           <h2 className={styles.heroTitle}>
             Join the<br />
-            <span>DORSU</span><br />
-            Network.
+            <span className={styles.accent}>LIBERALIS tracker</span>
           </h2>
           <p className={styles.heroDesc}>
-            PolyTrack brings together academic tracking and student records
-            into a single unified workspace for the DORSU community.
+            Create your account to manage your academic profile, 
+            track program progress, and stay updated with campus announcements.
           </p>
-
-          <div className={styles.steps}>
-            {steps.map((s, i) => (
-              <div key={s.label}>
-                <div className={styles.stepItem}>
-                  <div className={`${styles.stepBullet} ${styles[s.status]}`}>
-                    {s.status === 'done' ? <BadgeCheck size={13} /> : i + 1}
-                  </div>
-                  <div className={styles.stepLabel}>
-                    <strong>{s.label}</strong>
-                    <span>{s.desc}</span>
-                  </div>
-                </div>
-                {i < steps.length - 1 && <div className={styles.stepConnector} />}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.quoteBlock}>
-          <p className={styles.quoteText}>
-            "Access to seamless institutional tools is the foundation of an
-            empowered academic community."
-          </p>
-          <p className={styles.quoteAuthor}>DORSU — PolyTrack Initiative</p>
         </div>
       </div>
 
+      {/* ── RIGHT PANEL ── */}
       <div className={styles.rightPanel}>
-        <Link href="/login" className={styles.backButton}>
-          <ArrowLeft size={15} />
-          Back to Login
-        </Link>
+        <div className={styles.formSection}>
+          <div className={styles.formHeader}>
+            <h1 className={styles.formTitle}>Get Started</h1>
+            <p className={styles.formSubtitle}>Create your account with your school email.</p>
+          </div>
 
-        <div className={styles.formHeader}>
-          <p className={styles.formEyebrow}>Create Account</p>
-          <h1 className={styles.formTitle}>Get Started</h1>
-          <p className={styles.formSubtitle}>Enter your institutional email to begin.</p>
+          <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>School Email Address</label>
+              <div className={styles.inputWrapper}>
+                <Mail className={styles.inputIcon} size={18} />
+                <input type="email" className={styles.lineInput} placeholder="name@dorsu.edu.ph" required />
+                <span className={styles.inputLine}></span>
+              </div>
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Password</label>
+              <div className={styles.inputWrapper}>
+                <Lock className={styles.inputIcon} size={18} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className={styles.lineInput}
+                  placeholder="Create a strong password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button type="button" className={styles.eyeToggle} onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                <span className={styles.inputLine}></span>
+              </div>
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Confirm Password</label>
+              <div className={styles.inputWrapper}>
+                <Lock className={styles.inputIcon} size={18} />
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  className={styles.lineInput}
+                  placeholder="Repeat password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+                <button type="button" className={styles.eyeToggle} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                <span className={styles.inputLine}></span>
+              </div>
+            </div>
+
+            <button type="submit" className={styles.submitBtn}>Create Account</button>
+            <div className={styles.divider}><span>or sign up with</span></div>
+
+            <button type="button" className={styles.googleBtn} onClick={handleGoogleSignUp} disabled={isLoading}>
+              <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="18" height="18" />
+              Sign up with Google
+            </button>
+          </form>
+
+          <p className={styles.footerText}>
+            Already have an account? <Link href="/login" className={styles.loginLink}>Sign In</Link>
+          </p>
         </div>
-
-        <form className={styles.form} onSubmit={(e) => {
-          e.preventDefault();
-          
-          // Validate password meets all requirements
-          if (!allRequirementsMet) {
-            const unmetReqs = requirements
-              .filter(req => !req.met)
-              .map(req => req.label)
-              .join(', ');
-            sileo.error({ 
-              title: 'Password requirements not met',
-              description: `Missing: ${unmetReqs}`,
-              duration: 4000
-            });
-            return;
-          }
-          
-          sileo.success({ 
-            title: 'Account creation initiated!',
-            description: 'Your account is being set up. Check your email.',
-            duration: 4000
-          });
-        }}>
-          <div className={styles.fieldGroup}>
-            <input type="email" id="email" placeholder=" " required autoComplete="email" />
-            <label htmlFor="email">Institutional Email</label>
-            <Mail className={styles.fieldIcon} size={15} />
-            <span className={styles.fieldLine} />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              placeholder=" "
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-            <label htmlFor="password">Password</label>
-            <Lock className={styles.fieldIcon} size={15} />
-            <button
-              type="button"
-              className={styles.eyeToggle}
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-            </button>
-            <span className={styles.fieldLine} />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              id="confirmPassword"
-              placeholder=" "
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <Lock className={styles.fieldIcon} size={15} />
-            <button
-              type="button"
-              className={styles.eyeToggle}
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-            >
-              {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-            </button>
-            <span className={styles.fieldLine} />
-          </div>
-
-          <button type="submit" className={styles.submitBtn}>
-            Create My Account
-          </button>
-
-          <div className={styles.divider}>or</div>
-
-          <button type="button" className={styles.ssoBtn} onClick={handleGoogleSignUp} disabled={isLoading}>
-            <span className={styles.ssoIcon}>
-              <LayoutDashboard size={11} color="white" />
-            </span>
-            {isLoading ? 'Signing up...' : 'Sign up with Google'}
-          </button>
-        </form>
-
-        <p className={styles.footerText}>
-          Already have an account? <Link href="/login">Sign In</Link>
-        </p>
       </div>
     </div>
   );

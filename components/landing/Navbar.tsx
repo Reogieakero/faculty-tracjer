@@ -26,7 +26,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''} ${isOpen ? styles.menuOpen : ''}`}>
+    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.navContainer}>
         <Link href="/" className={styles.logo}>
           <div className={styles.logoIcon}>
@@ -56,9 +56,9 @@ export default function Navbar() {
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
-              <Moon size={20} className={styles.icon} />
+              <Moon size={20} />
             ) : (
-              <Sun size={20} className={styles.icon} />
+              <Sun size={20} />
             )}
           </button>
           

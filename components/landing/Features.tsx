@@ -1,57 +1,67 @@
 import styles from './Features.module.css';
-import { ClipboardCheck, BellRing, BarChart2, Users, Shield, Zap } from 'lucide-react';
+import { 
+  QrCode, 
+  BellRing, 
+  BarChart3, 
+  ShieldCheck, 
+  FileText 
+} from 'lucide-react';
 
 const features = [
   {
-    icon: <ClipboardCheck size={28} />,
-    title: 'Smart Attendance Tracking',
-    desc: 'Real-time attendance monitoring with automated alerts for absences and late arrivals. Track trends across classes effortlessly.',
-    tag: 'Core',
+    icon: <QrCode size={24} />,
+    title: 'QR-Based Scanning',
+    desc: 'Speed up the process with unique student QR codes. Quick scans provide instant, contact-free attendance verification for large classes.',
   },
   {
-    icon: <BellRing size={28} />,
-    title: 'Instant Announcements',
-    desc: 'Push announcements to your entire program or specific classes. Students receive updates instantly via the platform.',
-    tag: 'Communication',
+    icon: <BellRing size={24} />,
+    title: 'Posting Announcements',
+    desc: 'Broadcast critical updates to entire programs or specific classes instantly. Keep every student informed with a centralized feed.',
   },
   {
-    icon: <BarChart2 size={28} />,
-    title: 'Analytics Dashboard',
-    desc: 'Visualize attendance trends, program performance, and student engagement through intuitive charts and reports.',
-    tag: 'Insights',
+    icon: <BarChart3 size={24} />,
+    title: 'Analytics Visualization',
+    desc: 'Transform raw data into actionable insights. Visualize attendance trends and engagement through intuitive, clean dashboards.',
   },
   {
-    icon: <Users size={28} />,
-    title: 'Multi-Program Support',
-    desc: 'Manage Political Science, DevCom, and Psychology programs independently or view a unified cross-program overview.',
-    tag: 'Management',
+    icon: <ShieldCheck size={24} />,
+    title: 'RBAC Role Management',
+    desc: 'Secure access control with Role-Based Access. Ensure faculty and administrators only access what they are authorized to.',
   },
   {
-    icon: <Shield size={28} />,
-    title: 'Role-Based Access',
-    desc: 'Granular permissions for faculty, program chairs, and admins. Each user sees exactly what they need.',
-    tag: 'Security',
-  },
-  {
-    icon: <Zap size={28} />,
+    icon: <FileText size={24} />,
     title: 'Automated Reporting',
-    desc: 'Generate weekly, monthly, or semester-end attendance and performance reports with one click. Export to PDF or Excel.',
-    tag: 'Automation',
-  },
+    desc: 'Generate comprehensive attendance summaries in one click. Export to PDF for easy submission to your department.',
+  }
 ];
 
 export default function Features() {
   return (
     <section className={styles.features} id="features">
+      {/* Background Constellation */}
+      <svg className={styles.constellationBg} viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <path className={styles.constelLine} d="M100,200 L300,150 L250,400 Z" fill="none" />
+        <path className={styles.constelLine} d="M550,200 L800,100 L900,300 Z" fill="none"/>
+        <path className={styles.constelLine} d="M250,400 L480,350 L600,600 L350,700 Z" fill="none"/>
+        <path className={styles.constelLine} d="M750,400 L900,300 L950,600 L600,600 Z" fill="none" opacity="0.7"/>
+        <path className={styles.constelLine} d="M100,200 L50,500 L250,400 Z" fill="none" opacity="0.6"/>
+        <circle className={styles.constelNode} cx="100" cy="200" r="3" />
+        <circle className={styles.constelNode} cx="550" cy="200" r="4" />
+        <circle className={styles.constelNode} cx="250" cy="400" r="4" />
+        <circle className={styles.constelNode} cx="750" cy="400" r="3" />
+        <circle className={styles.constelNode} cx="350" cy="700" r="4" />
+        <circle className={styles.constelNode} cx="950" cy="600" r="3" />
+      </svg>
+
       <div className={styles.container}>
         <div className={styles.header}>
-          <span className={styles.pill}>Platform Features</span>
+          <span className={styles.pill}>Core Capabilities</span>
           <h2 className={styles.title}>
-            Everything faculty<br />
-            <span className={styles.accent}>needs in one place</span>
+            Powerful tools, <br />
+            <span className={styles.accent}>simplified for you</span>
           </h2>
           <p className={styles.subtitle}>
-            Purpose-built tools for academic program management — no bloat, no complexity.
+            Essential features for modern academic management without the unnecessary complexity.
           </p>
         </div>
 
@@ -59,7 +69,6 @@ export default function Features() {
           {features.map((f, i) => (
             <div className={styles.card} key={i}>
               <div className={styles.iconWrap}>{f.icon}</div>
-              <span className={styles.tag}>{f.tag}</span>
               <h3 className={styles.cardTitle}>{f.title}</h3>
               <p className={styles.cardDesc}>{f.desc}</p>
             </div>

@@ -1,140 +1,101 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
-import {
-  LayoutDashboard,
-  ArrowLeft,
-  Mail,
-  Lock,
-  BarChart3,
-  Shield,
-  Users,
-  Bell,
-} from 'lucide-react';
+import { LayoutDashboard, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import styles from './login.module.css';
 
-
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={styles.wrapper}>
-
-      {/* ── LEFT PANEL ── */}
       <div className={styles.leftPanel}>
-        <div className={styles.gridOverlay} />
+        <svg className={styles.constellationBg} viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+          <path className={styles.constelLine} d="M100,200 L300,150 L250,400 Z" fill="none" />
+          <path className={styles.constelLine} d="M300,150 L550,200 L480,350 L250,400 Z" fill="none" opacity="0.5"/>
+          <path className={styles.constelLine} d="M550,200 L800,100 L900,300 Z" fill="none"/>
+          <circle className={styles.constelNode} cx="100" cy="200" r="3" />
+          <circle className={styles.constelNode} cx="300" cy="150" r="4" />
+          <circle className={styles.constelNode} cx="550" cy="200" r="3" />
+        </svg>
 
         <div className={styles.brand}>
-          <div className={styles.brandIcon}>
-            <LayoutDashboard size={20} />
-          </div>
+          <div className={styles.brandIcon}><LayoutDashboard size={18} /></div>
           <span className={styles.brandName}>PolyTrack</span>
         </div>
 
         <div className={styles.heroContent}>
-          <div className={styles.eyebrow}>
-            <span className={styles.eyebrowDot} />
-            Institutional Management System
-          </div>
           <h2 className={styles.heroTitle}>
-            One Platform.<br />
-            <span>Every Campus</span><br />
-            Need.
+            Login your account to<br />
+            <span className={styles.accent}>LIBERALIS tracker</span>
           </h2>
           <p className={styles.heroDesc}>
-            PolyTrack brings together academic tracking, faculty management,
-            and student records into a single unified workspace for DORSU.
+            Access your personalized academic dashboard to manage attendance, 
+            track program progress, and stay updated with campus announcements.
           </p>
-        </div>
-
-        <div className={styles.statsRow}>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>12K+</span>
-            <span className={styles.statLabel}>Students</span>
-          </div>
-          <div className={styles.statDivider} />
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>340+</span>
-            <span className={styles.statLabel}>Faculty</span>
-          </div>
-          <div className={styles.statDivider} />
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>99.9%</span>
-            <span className={styles.statLabel}>Uptime</span>
-          </div>
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ── */}
       <div className={styles.rightPanel}>
-        <Link href="/" className={styles.backButton}>
-          <ArrowLeft size={15} />
-          Back to Home
-        </Link>
+        <div className={styles.formSection}>
+          <div className={styles.formHeader}>
+            <h1 className={styles.formTitle}>Welcome Back</h1>
+            <p className={styles.formSubtitle}>Sign in to your account to continue.</p>
+          </div>
 
-        <div className={styles.formHeader}>
-          <p className={styles.formEyebrow}>Secure Portal</p>
-          <h1 className={styles.formTitle}>Welcome Back</h1>
-          <p className={styles.formSubtitle}>
-            Log in with your institutional credentials to continue.
+          <form className={styles.form}>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Email Address</label>
+              <div className={styles.inputWrapper}>
+                <Mail className={styles.inputIcon} size={18} />
+                <input 
+                  type="email" 
+                  className={styles.lineInput} 
+                  placeholder="name@dorsu.edu.ph" 
+                  required 
+                />
+                <span className={styles.inputLine}></span>
+              </div>
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Password</label>
+              <div className={styles.inputWrapper}>
+                <Lock className={styles.inputIcon} size={18} />
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  className={styles.lineInput} 
+                  placeholder="••••••••" 
+                  required 
+                />
+                <button 
+                  type="button" 
+                  className={styles.eyeToggle} 
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                <span className={styles.inputLine}></span>
+              </div>
+            </div>
+
+            <button type="submit" className={styles.submitBtn}>Sign In</button>
+            
+            <div className={styles.divider}>
+              <span>or</span>
+            </div>
+
+            <button type="button" className={styles.googleBtn}>
+              <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="18" height="18" />
+              Sign in with Google
+            </button>
+          </form>
+
+          <p className={styles.footerText}>
+            Don't have an account? <Link href="/register" className={styles.createLink}>Create account</Link>
           </p>
         </div>
-
-        <form className={styles.form}>
-
-          {/* Email field */}
-          <div className={styles.fieldGroup}>
-            <input
-              type="email"
-              id="email"
-              placeholder=" "
-              required
-              autoComplete="email"
-            />
-            <label htmlFor="email">Institutional Email</label>
-            <Mail className={styles.fieldIcon} size={16} />
-            <span className={styles.fieldLine} />
-          </div>
-
-          {/* Password field */}
-          <div className={styles.fieldGroup}>
-            <input
-              type="password"
-              id="password"
-              placeholder=" "
-              required
-              autoComplete="current-password"
-            />
-            <label htmlFor="password">Password</label>
-            <Lock className={styles.fieldIcon} size={16} />
-            <span className={styles.fieldLine} />
-          </div>
-
-          {/* Options */}
-          <div className={styles.options}>
-            <label className={styles.remember}>
-              <input type="checkbox" /> Remember me
-            </label>
-            <a href="#" className={styles.forgot}>Forgot password?</a>
-          </div>
-
-          <button type="submit" className={styles.submitBtn}>
-            Sign In to PolyTrack
-          </button>
-
-          <div className={styles.divider}>or</div>
-
-          <button type="button" className={styles.ssoBtn}>
-            <span className={styles.ssoIcon}>
-              <LayoutDashboard size={11} color="white" />
-            </span>
-            Continue with Institutional SSO
-          </button>
-        </form>
-
-        <p className={styles.footerText}>
-          Don't have an account?{' '}
-          <Link href="/register">Contact your Admin</Link>
-        </p>
       </div>
-
     </div>
   );
 }

@@ -1,25 +1,21 @@
 .navbar {
-  position: fixed;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 94%;
-  max-width: 1200px;
-  padding: 8px 16px;
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 12px 24px;
   background: var(--bg-nav);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 24px;
-  border: 1px solid var(--border-nav);
+  border-bottom: 1px solid var(--border-nav);
   z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .navbar.scrolled {
-  top: 10px;
-  width: 96%;
+  position: fixed;
   background: var(--bg-nav);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .navContainer {
@@ -27,9 +23,11 @@
   align-items: center;
   justify-content: space-between;
   height: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-/* Logo */
 .logo {
   display: flex;
   align-items: center;
@@ -56,15 +54,13 @@
   letter-spacing: -0.5px;
 }
 
-/* Links Drawer */
 .navLinks {
   position: absolute;
-  top: 70px;
+  top: 100%;
   left: 0;
   width: 100%;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-bottom: 1px solid var(--border-color);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -73,7 +69,6 @@
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.3s ease;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
 
 .navLinks.active {
@@ -90,7 +85,6 @@
   transition: color 0.2s;
 }
 
-/* Actions */
 .navActions {
   display: flex;
   align-items: center;
@@ -111,7 +105,7 @@
 }
 
 .loginBtn, .getStartedBtn {
-  display: none; /* Hidden on mobile */
+  display: none;
 }
 
 .hamburger {
@@ -125,7 +119,6 @@
   padding: 4px;
 }
 
-/* Mobile Specific Actions inside Drawer */
 .mobileActions {
   display: flex;
   flex-direction: column;
@@ -158,11 +151,9 @@
   font-weight: 700;
 }
 
-/* Desktop Styles */
 @media (min-width: 1024px) {
   .navbar {
-    padding: 10px 32px;
-    border-radius: 9999px;
+    padding: 12px 40px;
   }
 
   .hamburger, .mobileActions {
@@ -179,7 +170,6 @@
     opacity: 1;
     visibility: visible;
     transform: none;
-    box-shadow: none;
     width: auto;
     gap: 32px;
   }

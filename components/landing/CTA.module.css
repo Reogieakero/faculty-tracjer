@@ -1,11 +1,13 @@
 .section {
-  padding: 80px 20px;
-  background: var(--bg-section-alt);
+  padding: 40px 20px 60px; /* Standardized gutter */
+  background: var(--bg-primary); /* Keeps transition seamless */
   transition: background 0.35s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .container {
-  max-width: 900px;
+  max-width: 1200px; /* Aligned with Features and HowItWorks */
   margin: 0 auto;
 }
 
@@ -16,7 +18,7 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 32px 80px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
 }
 
 .glow {
@@ -42,14 +44,16 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 7px 18px;
+  padding: 6px 18px; /* Matched pill style */
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 9999px;
   font-family: var(--font-kulim-park);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.9);
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
   margin-bottom: 24px;
   position: relative;
   z-index: 1;
@@ -59,7 +63,7 @@
   font-family: var(--font-unbounded);
   font-size: 1.8rem;
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: -0.8px;
   line-height: 1.2;
   color: #ffffff;
   margin-bottom: 16px;
@@ -69,10 +73,13 @@
 
 .subtitle {
   font-family: var(--font-kulim-park);
-  font-size: 1rem;
-  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.8);
   margin-bottom: 32px;
   line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
   z-index: 1;
 }
@@ -80,7 +87,7 @@
 .actions {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 12px;
   margin-bottom: 24px;
   position: relative;
@@ -89,32 +96,39 @@
 
 .primaryBtn, .secondaryBtn {
   width: 100%;
+  height: 48px; /* Matched to Hero/Features buttons */
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 16px 20px;
-  font-size: 1rem;
+  padding: 0 24px;
+  font-size: 0.95rem;
+  font-family: var(--font-kulim-park);
+  font-weight: 600;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .primaryBtn {
   background: #ffffff;
   color: #1e3a8a;
   border: none;
-  border-radius: 9999px;
-  font-family: var(--font-kulim-park);
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.35s ease;
+  gap: 8px;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .secondaryBtn {
   background: transparent;
-  border: 1.5px solid rgba(255,255,255,0.45);
-  border-radius: 9999px;
-  font-family: var(--font-kulim-park);
-  color: rgba(255,255,255,0.9);
-  cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: #ffffff;
+}
+
+.secondaryBtn:hover {
+  background: rgba(255,255,255,0.1);
 }
 
 .footnote {
@@ -125,9 +139,10 @@
   z-index: 1;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
+  .section { padding: 80px 40px; }
   .card { padding: 72px 60px; border-radius: 32px; }
-  .title { font-size: 2.7rem; letter-spacing: -1.5px; }
+  .title { font-size: 3rem; letter-spacing: -1.5px; }
   .actions { flex-direction: row; justify-content: center; }
   .primaryBtn, .secondaryBtn { width: auto; }
 }
