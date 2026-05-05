@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import Sidebar from '@/components/dashboard/Sidebar';
+import { supabase } from '@/lib/supabase';
 import { 
-  Calendar, 
   Users, 
   CheckCircle, 
   XCircle, 
@@ -39,6 +39,21 @@ function FlippingStatCard({ label, val, icon, description }: any) {
 }
 
 export default function DashboardPage() {
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser({
+          name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          email: user.email || ''
+        });
+      }
+    };
+    getUserData();
+  }, []);
+
   const stats = [
     { 
       label: 'Total Events', 
@@ -71,8 +86,11 @@ export default function DashboardPage() {
       <div className={styles.wrapper}>
         
         <header className={styles.header}>
-          <h1>Dashboard</h1>
-          <p>PolyTrack Analytics • Academic Session 2026</p>
+          <div className={styles.userGreeting}>
+            <h1>Welcome, {user?.name}</h1>
+            <p className={styles.userEmail}>{user?.email}</p>
+          </div>
+          <p className={styles.sessionInfo}>PolyTrack Analytics • Academic Session 2026</p>
         </header>
 
         <section className={styles.statsGrid}>

@@ -2,10 +2,49 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { LayoutDashboard, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { sileo } from 'sileo';
 import styles from './login.module.css';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleManualLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      sileo.success({ title: "Welcome back!" });
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      sileo.error({ 
+        title: "Login Failed", 
+        description: "Invalid credentials or account not found." 
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: { prompt: 'select_account' }
+      },
+    });
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -43,7 +82,7 @@ export default function LoginPage() {
             <p className={styles.formSubtitle}>Sign in to your account to continue.</p>
           </div>
 
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={handleManualLogin}>
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Email Address</label>
               <div className={styles.inputWrapper}>
@@ -52,6 +91,8 @@ export default function LoginPage() {
                   type="email" 
                   className={styles.lineInput} 
                   placeholder="name@dorsu.edu.ph" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required 
                 />
                 <span className={styles.inputLine}></span>
@@ -66,6 +107,8 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"} 
                   className={styles.lineInput} 
                   placeholder="••••••••" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required 
                 />
                 <button 
@@ -79,13 +122,15 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button type="submit" className={styles.submitBtn}>Sign In</button>
+            <button type="submit" className={styles.submitBtn} disabled={isLoading}>
+              {isLoading ? 'Verifying...' : 'Sign In'}
+            </button>
             
             <div className={styles.divider}>
               <span>or</span>
             </div>
 
-            <button type="button" className={styles.googleBtn}>
+            <button type="button" className={styles.googleBtn} onClick={handleGoogleLogin}>
               <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="18" height="18" />
               Sign in with Google
             </button>
