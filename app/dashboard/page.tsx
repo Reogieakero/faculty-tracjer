@@ -27,12 +27,23 @@ export default function DashboardPage() {
 
       <div className={styles.wrapper}>
         <header className={styles.header}>
-          <div className={styles.userGreeting}>
-            <h1>Welcome, {user?.name}</h1>
-            <p className={styles.userEmail}>{user?.email}</p>
-          </div>
-          <p className={styles.sessionInfo}>PolyTrack Analytics • 2026</p>
-        </header>
+  <div className={styles.profileContainer}>
+    <div className={styles.headerAvatar}>
+      {user?.avatarUrl ? (
+        <img src={user.avatarUrl} alt="Profile" className={styles.avatarImg} />
+      ) : (
+        <div className={styles.avatarPlaceholder}>
+          {user?.name?.charAt(0).toUpperCase()}
+        </div>
+      )}
+    </div>
+    <div className={styles.userGreeting}>
+      <h1>Welcome, {user?.name}</h1>
+      <p className={styles.userEmail}>{user?.email}</p>
+    </div>
+  </div>
+  <p className={styles.sessionInfo}>PolyTrack Analytics • 2026</p>
+</header>
 
         <section className={styles.statsGrid}>
           {stats.map((stat, i) => (

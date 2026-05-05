@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export function useStudentProfile() {
-  const [user, setUser] = useState<{ name: string; email: string; studentId: string; program: string } | null>(null);
+  const [user, setUser] = useState<{ 
+    name: string; 
+    email: string; 
+    studentId: string; 
+    program: string;
+    avatarUrl: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   const getUserData = async () => {
@@ -10,7 +16,7 @@ export function useStudentProfile() {
     if (authUser) {
       const { data: studentData } = await supabase
         .from('students')
-        .select('student_id, full_name, program')
+        .select('student_id, full_name, program, avatar_url')
         .eq('id', authUser.id)
         .single();
 
@@ -22,6 +28,7 @@ export function useStudentProfile() {
         email: authUser.email || '',
         studentId: existingId,
         program: existingProgram,
+        avatarUrl: studentData?.avatar_url || '',
       });
     }
     setLoading(false);

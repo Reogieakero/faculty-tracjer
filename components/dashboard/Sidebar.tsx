@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase'; // Import for logout logic
 import {
   LayoutDashboard,
   Megaphone,
@@ -39,7 +40,13 @@ export default function Sidebar() {
     if (!isMobile) setIsExpanded(!isExpanded);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login'); // Or your root path
+  };
+
   const isActive = (href: string) => {
+    // Exact match for dashboard to avoid highlighting everything under /
     if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
   };
@@ -76,32 +83,43 @@ export default function Sidebar() {
       </div>
 
       <div className={styles.bottomSection}>
+        {/* Updated Settings Routing */}
         <div
-          className={`${styles.navItem} ${isActive('/dashboard/settings') ? styles.navItemActive : ''}`}
+          className={`${styles.navItem} ${isActive('/settings') ? styles.navItemActive : ''}`}
           onClick={(e) => {
             e.stopPropagation();
-            router.push('/dashboard/settings');
+            router.push('/settings');
           }}
         >
-          <div className={styles.iconWrapper}><Settings size={20} /></div>
-          {isExpanded && <span className={styles.label}>Settings</span>}
+          <div className={styles.iconWrapper}>
+            <Settings size={20} />
+          </div>
+          {(isExpanded || isMobile) && <span className={styles.label}>Settings</span>}
+          {isExpanded && isActive('/settings') && <div className={styles.activePip} />}
         </div>
+
+        {/* Functional Logout */}
         <div
           className={styles.navItem}
           onClick={(e) => {
             e.stopPropagation();
+            handleLogout();
           }}
         >
-          <div className={styles.iconWrapper}><LogOut size={20} /></div>
-          {isExpanded && <span className={styles.label}>Logout</span>}
+          <div className={styles.iconWrapper}>
+            <LogOut size={20} />
+          </div>
+          {(isExpanded || isMobile) && <span className={styles.label}>Logout</span>}
         </div>
 
-        <div className={styles.toggleHint}>
-          <ChevronRight
-            size={14}
-            className={`${styles.chevron} ${isExpanded ? styles.rotate : ''}`}
-          />
-        </div>
+        {!isMobile && (
+          <div className={styles.toggleHint}>
+            <ChevronRight
+              size={14}
+              className={`${styles.chevron} ${isExpanded ? styles.rotate : ''}`}
+            />
+          </div>
+        )}
       </div>
     </aside>
   );
