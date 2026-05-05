@@ -1,0 +1,154 @@
+.wrapper {
+  padding: 32px;
+  background: #f8fafc;
+  min-height: 100vh;
+  padding-bottom: 120px;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-family: var(--font-unbounded);
+  font-size: 1.4rem;
+  color: #0D0B50;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-family: var(--font-kulim-park);
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* 3 Cards per row grid */
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.eventCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(13, 11, 80, 0.1);
+}
+
+.cardTop {
+  padding: 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.programBadge {
+  background: rgba(13, 11, 80, 0.08);
+  color: #0D0B50;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.eventTitle {
+  font-family: var(--font-unbounded);
+  font-size: 0.95rem;
+  color: #0D0B50;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.eventMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.chartSection {
+  padding: 24px;
+  background: #fcfdfe;
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chartLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.totalCount {
+  font-family: var(--font-unbounded);
+  font-size: 1.1rem;
+  color: #0D0B50;
+}
+
+.cardFooter {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.footerStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.statusCompleted {
+  color: #10b981;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #0D0B50;
+  font-family: var(--font-unbounded);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1100px) {
+  .threeColumnGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .threeColumnGrid { grid-template-columns: 1fr; }
+}
