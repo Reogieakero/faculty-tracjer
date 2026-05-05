@@ -8,32 +8,61 @@ export function useAcademicCalendar() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchScheduleData = async () => {
+      setLoading(true);
+      
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from('students')
-          .select('program')
-          .eq('id', user.id)
-          .single();
-
-        const program = data?.program || null;
-        setUserProgram(program);
-
-        const mockEvents = [
-          { id: 1, title: 'Physics Seminar', time: '10:30 AM', day: 5, program: 'All', color: 'blue' },
-          { id: 2, title: 'Dept Meeting', time: '1:00 PM', day: 7, program: program, color: 'blue' },
-          { id: 3, title: 'Lab Session', time: '2:00 PM', day: 12, program: 'All', color: 'blue' },
-          { id: 4, title: 'Thesis Review', time: '9:00 AM', day: 19, program: program, color: 'blue' },
-          { id: 5, title: 'Defense Prep', time: '3:30 PM', day: 22, program: 'All', color: 'blue' },
-          { id: 6, title: 'Faculty Sync', time: '11:00 AM', day: 26, program: 'All', color: 'blue' },
-        ];
-        setEvents(mockEvents);
+      if (!user) {
+        setLoading(false);
+        return;
       }
+
+      // 1. Get User Program
+      const { data: studentData } = await supabase
+        .from('students')
+        .select('program')
+        .eq('id', user.id)
+        .single();
+
+      const program = studentData?.program || 'All';
+      setUserProgram(program);
+
+      // 2. Calculate Month Range for Filtering
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1).toISOString();
+      const lastDay = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+
+      // 3. Fetch Real Events from Supabase
+      const { data: dbEvents, error } = await supabase
+        .from('events')
+        .select('*')
+        .or(`program.eq.All,program.eq.${program}`)
+        .gte('event_date', firstDay)
+        .lte('event_date', lastDay);
+
+      if (!error && dbEvents) {
+        const formattedEvents = dbEvents.map(ev => {
+          const dateObj = new Date(ev.event_date);
+          return {
+            ...ev,
+            day: dateObj.getDate(),
+            // Format time from 24h (HH:mm:ss) to 12h (hh:mm AM/PM)
+            time: ev.start_time ? new Date(`1970-01-01T${ev.start_time}`).toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            }) : 'TBA',
+            color: 'blue'
+          };
+        });
+        setEvents(formattedEvents);
+      }
+      
       setLoading(false);
     };
-    fetchUserData();
-  }, []);
+
+    fetchScheduleData();
+  }, [currentDate]); // Refetch when the user changes months
 
   const getDaysInMonth = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
   const getFirstDayOfMonth = (y: number, m: number) => new Date(y, m, 1).getDay();

@@ -1,11 +1,13 @@
+'use client';
+
 import { useState } from 'react';
 import { IdCard, CheckCircle } from 'lucide-react';
 import styles from '../dashboard.module.css';
 
-const PROGRAMS = [
-  { id: 'bs-devcom', label: 'BS DevCom' },
-  { id: 'bs-polsci', label: 'BS PolSci' },
-  { id: 'bs-psycho', label: 'BS Psycho' },
+export const PROGRAMS = [
+  { id: 'DevCom', label: 'BS Development Communication', abbr: 'DevCom' },
+  { id: 'Psych',  label: 'BS Psychology',                abbr: 'Psych' },
+  { id: 'PolSci', label: 'AB Political Science',          abbr: 'PolSci' },
 ];
 
 export function StudentIdModal({ onSave }: { onSave: (id: string, prog: string) => Promise<void> }) {
@@ -13,6 +15,7 @@ export function StudentIdModal({ onSave }: { onSave: (id: string, prog: string) 
   const [selectedProgram, setSelectedProgram] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleIdInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/[^0-9]/g, '');
@@ -23,12 +26,15 @@ export function StudentIdModal({ onSave }: { onSave: (id: string, prog: string) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (studentId.length !== 9 || !selectedProgram) return;
+    
     setIsSubmitting(true);
+    setErrorMessage(null);
+    
     try {
       await onSave(studentId, selectedProgram);
       setIsSubmitted(true);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      setErrorMessage(error.message || "Failed to save profile. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -46,7 +52,7 @@ export function StudentIdModal({ onSave }: { onSave: (id: string, prog: string) 
           <>
             <div className={styles.modalHeader}>
               <div className={styles.iconCircle}><IdCard size={24} /></div>
-              <h2>One Quick Step</h2>
+              <h2>Complete Your Profile</h2>
             </div>
             <form onSubmit={handleSubmit}>
               <div className={styles.programTabs}>
@@ -57,7 +63,7 @@ export function StudentIdModal({ onSave }: { onSave: (id: string, prog: string) 
                     className={`${styles.programTab} ${selectedProgram === prog.id ? styles.programTabActive : ''}`}
                     onClick={() => setSelectedProgram(prog.id)}
                   >
-                    {prog.label}
+                    {prog.abbr}
                   </button>
                 ))}
               </div>
@@ -70,7 +76,16 @@ export function StudentIdModal({ onSave }: { onSave: (id: string, prog: string) 
                 maxLength={9}
                 required
               />
-              <button type="submit" className={styles.idSubmitBtn} disabled={isSubmitting || studentId.length !== 9 || !selectedProgram}>
+              {errorMessage && (
+                <p style={{ color: '#dc2626', fontSize: '0.75rem', marginBottom: '1rem' }}>
+                  {errorMessage}
+                </p>
+              )}
+              <button 
+                type="submit" 
+                className={styles.idSubmitBtn} 
+                disabled={isSubmitting || studentId.length !== 9 || !selectedProgram}
+              >
                 {isSubmitting ? 'Saving...' : 'Continue to Dashboard'}
               </button>
             </form>
