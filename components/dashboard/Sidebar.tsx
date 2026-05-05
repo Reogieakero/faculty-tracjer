@@ -32,7 +32,7 @@ export default function Sidebar() {
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', href: '/dashboard' },
     { icon: <Megaphone size={20} />, label: 'Announcement', href: '/updates' },
     { icon: <Calendar size={20} />, label: 'Schedule', href: '/schedule' },
-    { icon: <UserCheck size={20} />, label: 'Attendance', href: '/dashboard/attendance' },
+    { icon: <UserCheck size={20} />, label: 'Attendance', href: '/attendance' },
   ];
 
   const handleToggle = () => {
