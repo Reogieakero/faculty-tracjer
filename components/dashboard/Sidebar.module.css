@@ -67,11 +67,39 @@
   color: #64748b;
   transition: all 0.2s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .navItem:hover {
   background: #f1f5f9;
   color: #2563eb;
+}
+
+.navItemActive {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.navItemActive .iconWrapper {
+  color: #2563eb;
+}
+
+.navItemActive .label {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.navItemActive:hover {
+  background: #dbeafe;
+}
+
+.activePip {
+  margin-left: auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+  flex-shrink: 0;
 }
 
 .iconWrapper {
@@ -136,8 +164,8 @@
     cursor: default;
   }
 
-  .brand, 
-  .bottomSection, 
+  .brand,
+  .bottomSection,
   .toggleHint {
     display: none;
   }
@@ -162,6 +190,28 @@
     padding: 8px;
     flex: 1;
     justify-content: center;
+  }
+
+  .navItemActive {
+    background: transparent;
+    color: #2563eb;
+    position: relative;
+  }
+
+  .navItemActive::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .activePip {
+    display: none;
   }
 
   .iconWrapper {
