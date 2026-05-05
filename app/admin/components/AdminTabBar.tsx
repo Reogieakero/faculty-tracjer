@@ -8,8 +8,8 @@ import {
   LayoutDashboard, 
   Users, 
   Calendar, 
-  History, 
-  ShieldCheck 
+  BarChart3, // Updated icon for Analytics
+  ClipboardCheck
 } from 'lucide-react';
 import styles from './tabbar.module.css';
 
@@ -17,8 +17,8 @@ const tabs = [
   { name: 'Home', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard' },
   { name: 'Students', icon: <Users size={20} />, path: '/admin/students' },
   { name: 'Events', icon: <Calendar size={20} />, path: '/admin/events' },
-  { name: 'Logs', icon: <History size={20} />, path: '/admin/logs' },
-  { name: 'Security', icon: <ShieldCheck size={20} />, path: '/admin/security' },
+  { name: 'Audit', icon: <ClipboardCheck size={20} />, path: '/admin/audit' },
+  { name: 'Analytics', icon: <BarChart3 size={20} />, path: '/admin/analytics' }, // Changed from Security
 ];
 
 export default function AdminTabBar() {

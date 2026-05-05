@@ -135,6 +135,28 @@
   margin-top: auto;
 }
 
+.readMoreBtn {
+  flex: 1.5;
+  background: #f1f5f9;
+  color: #0d0b50;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.readMoreBtn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
 .editBtn {
   flex: 1;
   background: #0d0b50;

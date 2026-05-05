@@ -1,0 +1,392 @@
+.wrapper {
+  padding: 24px 24px 24px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: #1e293b;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: var(--font-unbounded);
+  font-size: 1.4rem;
+  color: #0D0B50;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+  font-family: var(--font-kulim-park);
+}
+
+.topActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.searchBox input {
+  border: none;
+  background: transparent;
+  padding: 10px;
+  font-size: 0.85rem;
+  width: 220px;
+  outline: none;
+}
+
+.mainContentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.contentCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.cardTitle {
+  font-family: var(--font-unbounded);
+  font-size: 0.85rem;
+  color: #0D0B50;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filterBtn {
+  background: #0D0B50;
+  border: 1px solid #e2e8f0;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 12px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+.table td {
+  padding: 16px 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-family: var(--font-kulim-park);
+  font-weight: 600;
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconBox {
+  width: 32px;
+  height: 32px;
+  background: rgba(13, 11, 80, 0.04);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0D0B50;
+}
+
+.docTitleText {
+  font-weight: 700;
+  color: #0D0B50;
+  margin: 0;
+}
+
+.docDescText {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+}
+
+.actionBadge {
+  background: #ecfdf5;
+  color: #10b981;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.rowActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.moreIcon {
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.moreIcon:hover {
+  color: #0D0B50;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 11, 80, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: white;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modalTitle {
+  font-family: var(--font-unbounded);
+  font-size: 1rem;
+  color: #0D0B50;
+  margin: 0;
+}
+
+.closeBtn {
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.modalBody {
+  padding: 24px;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 100px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: var(--font-kulim-park);
+  font-weight: 600;
+  font-size: 0.9rem;
+  outline: none;
+  resize: none;
+}
+
+.uploadArea {
+  border: 2px dashed #e2e8f0;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+
+.uploadArea:hover {
+  border-color: #0D0B50;
+}
+
+.fileLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #64748b;
+  font-family: var(--font-kulim-park);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.selectedFileName {
+  color: #0D0B50;
+  font-weight: 700;
+}
+
+.modalFooter {
+  padding: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f8fafc;
+}
+
+.cancelBtn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.submitBtn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  background: #0D0B50;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+  cursor: pointer;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ... (Keep existing styles from before) ... */
+
+.sizeText {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.actionBtn {
+  background: #f1f5f9;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  background: #0D0B50;
+  color: white;
+}
+
+/* PDF Preview Specifics */
+.previewContainer {
+  background: white;
+  width: 90%;
+  height: 90vh;
+  max-width: 1000px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlide 0.3s ease;
+}
+
+.previewHeader {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.pdfFrame {
+  flex: 1;
+  width: 100%;
+  border: none;
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
