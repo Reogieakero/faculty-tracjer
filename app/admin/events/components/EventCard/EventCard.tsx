@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, MapPin, Users, Edit3, Trash2, ImageOff } from 'lucide-react';
+import { Calendar, MapPin, Users, Edit3, Trash2, ImageOff, Clock } from 'lucide-react';
 import { Event } from '../../hooks/useEvents';
 import styles from './EventCard.module.css';
 
@@ -11,51 +11,67 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onEdit, onDelete }: EventCardProps) {
+  const formattedDate = new Date(event.event_date).toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric' 
+  });
+
   return (
     <div className={styles.card}>
-      {/* Banner */}
       <div className={styles.banner}>
         {event.image_url ? (
           <img src={event.image_url} alt={event.title} className={styles.bannerImg} />
         ) : (
           <div className={styles.bannerEmpty}>
-            <ImageOff size={22} />
+            <ImageOff size={24} />
           </div>
         )}
-        <span className={`${styles.statusPill} ${styles[event.status]}`}>
+        <div className={`${styles.statusPill} ${styles[event.status]}`}>
           {event.status}
-        </span>
+        </div>
       </div>
 
       <div className={styles.body}>
         <h4 className={styles.title}>{event.title}</h4>
-
-        <div className={styles.info}>
+        
+        <div className={styles.infoGrid}>
           <div className={styles.infoRow}>
-            <Calendar size={14} />
-            <span>{new Date(event.event_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-          </div>
-          {event.start_time && (
-            <div className={styles.infoRow}>
-              <span className={styles.timeChip}>{event.start_time}</span>
+            <div className={styles.iconWrapper}>
+              <Calendar size={14} />
             </div>
-          )}
-          <div className={styles.infoRow}>
-            <MapPin size={14} />
-            <span>{event.location || 'No location set'}</span>
+            <span>{formattedDate}</span>
           </div>
+
           <div className={styles.infoRow}>
-            <Users size={14} />
-            <span>{event.attendees_count} Registered</span>
+            <div className={styles.iconWrapper}>
+              <Clock size={14} />
+            </div>
+            <span>{event.start_time || '--:--'}</span>
+          </div>
+
+          <div className={styles.infoRow}>
+            <div className={styles.iconWrapper}>
+              <Users size={14} />
+            </div>
+            <span>{event.attendees_count}</span>
+          </div>
+
+          <div className={`${styles.infoRow} ${styles.fullWidth}`}>
+            <div className={styles.iconWrapper}>
+              <MapPin size={14} />
+            </div>
+            <span className={styles.locationText}>
+              {event.location || 'Remote / TBD'}
+            </span>
           </div>
         </div>
 
         <div className={styles.footer}>
           <button className={styles.editBtn} onClick={() => onEdit(event)}>
-            <Edit3 size={14} /> Edit
+            <Edit3 size={16} /> Manage Event
           </button>
           <button className={styles.deleteBtn} onClick={() => onDelete(event.id)}>
-            <Trash2 size={14} />
+            <Trash2 size={16} />
           </button>
         </div>
       </div>

@@ -71,8 +71,6 @@
 }
 
 .contentCard {
-  background: white;
-  border: 1px solid #e2e8f0;
   border-radius: 24px;
   padding: 1.5rem;
 }
@@ -83,4 +81,65 @@
   color: #0D0B50;
   text-transform: uppercase;
   margin-bottom: 2rem;
+}
+
+.filterSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.programContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.programBadge {
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: 2px solid #f1f5f9;
+  color: #64748b;
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.programBadgeActive {
+  border-color: #0d0b50;
+  color: #0d0b50;
+  background: rgba(13, 11, 80, 0.05);
+  transform: translateY(-2px);
+}
+
+.statusTabGroup {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 5px;
+  border-radius: 14px;
+  width: fit-content;
+  border: 1px solid #e2e8f0;
+}
+
+.statusTab {
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.statusTabActive {
+  background: #0d0b50;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(13, 11, 80, 0.15);
 }
