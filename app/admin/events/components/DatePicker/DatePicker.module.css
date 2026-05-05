@@ -1,0 +1,151 @@
+.root {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Trigger button ── */
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.triggerOpen,
+.trigger:focus {
+  outline: none;
+  border-bottom-color: #0D0B50;
+}
+
+.triggerValue {
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.triggerPlaceholder {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.triggerIcon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* ── Popover ── */
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 1rem;
+  width: 260px;
+  box-shadow: 0 16px 40px rgba(13, 11, 80, 0.12);
+  animation: pop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Navigation ── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.navLabel {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #0D0B50;
+}
+
+.navBtn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: background 0.15s;
+}
+
+.navBtn:hover {
+  background: #e2e8f0;
+  color: #0D0B50;
+}
+
+/* ── Day grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dayName {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  padding: 4px 0 6px;
+  text-transform: uppercase;
+}
+
+.dayBtn {
+  aspect-ratio: 1;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dayBtn:hover {
+  background: #f1f5f9;
+}
+
+.today {
+  color: #0D0B50;
+  font-weight: 800;
+  position: relative;
+}
+
+.today::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #0D0B50;
+}
+
+.selected {
+  background: #0D0B50 !important;
+  color: white !important;
+  font-weight: 800;
+}

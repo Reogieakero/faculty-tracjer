@@ -1,0 +1,165 @@
+/* ── Base Layout ─────────────────────────────────────────────────── */
+.wrapper { padding: 2rem; max-width: 1400px; margin: 0 auto; color: #1e293b; min-height: 100vh; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; }
+.title { font-family: var(--font-unbounded); font-size: 1.4rem; color: #0D0B50; }
+.subtitle { font-size: 0.85rem; color: #64748b; font-weight: 600; font-family: var(--font-kulim-park); }
+
+/* ── Top Actions ─────────────────────────────────────────────────── */
+.topActions { display: flex; gap: 12px; }
+.searchBox { position: relative; display: flex; align-items: center; background: #f1f5f9; padding: 0 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.searchBox svg { color: #94a3b8; flex-shrink: 0; }
+.searchBox input { border: none; background: transparent; padding: 10px; font-size: 0.85rem; width: 220px; outline: none; }
+
+.addBtn { background: #0D0B50; color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+.addBtn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+/* ── Content Card ────────────────────────────────────────────────── */
+.contentCard { background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 1.5rem; }
+.cardHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.cardTitle { font-family: var(--font-unbounded); font-size: 0.85rem; color: #0D0B50; text-transform: uppercase; letter-spacing: 0.05em; }
+.recordCount { font-size: 0.75rem; color: #94a3b8; margin-top: 4px; font-weight: 500; }
+
+/* ── Tab Selector ────────────────────────────────────────────────── */
+.tabSelector { background: #f8fafc; padding: 4px; border-radius: 12px; display: flex; gap: 4px; border: 1px solid #e2e8f0; }
+.tabBtn { border: none; background: transparent; padding: 6px 16px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.2s; }
+.tabBtn:hover { color: #0D0B50; }
+.activeTab { background: white; color: #0D0B50; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+/* ── Table ───────────────────────────────────────────────────────── */
+.tableWrapper { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { padding: 12px; font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; text-align: left; letter-spacing: 0.05em; }
+.table td { padding: 14px 12px; border-bottom: 1px solid #f8fafc; vertical-align: middle; }
+
+.tableRow { cursor: pointer; transition: background 0.15s; }
+.tableRow:hover { background: #f8fafc; }
+.tableRow:last-child td { border-bottom: none; }
+.rowSelected { background: #eff6ff !important; }
+
+/* ── User Cell ───────────────────────────────────────────────────── */
+.userCell { display: flex; align-items: center; gap: 12px; }
+.avatarImg { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; }
+.avatarPlaceholder { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.avatarInitials { font-size: 0.65rem; font-weight: 800; color: white; letter-spacing: 0.03em; }
+.nameContainer { display: flex; flex-direction: column; }
+.studentName { font-weight: 700; color: #1e293b; font-size: 0.9rem; }
+.studentEmail { font-size: 0.7rem; color: #94a3b8; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+
+.idBadge { font-family: var(--font-unbounded); font-size: 0.72rem; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 8px; }
+.programCell { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #334155; font-size: 0.85rem; }
+
+.statusBadge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
+.active { background: #f0fdf4; color: #16a34a; }
+.inactive { background: #fef2f2; color: #ef4444; }
+
+.actionBtn { background: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #94a3b8; transition: 0.15s; }
+.actionBtn:hover { border-color: #0D0B50; color: #0D0B50; background: #f8fafc; }
+
+/* ── Loader & Empty State ────────────────────────────────────────── */
+.loaderContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; gap: 12px; color: #94a3b8; }
+.spinner { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.emptyState { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; gap: 12px; color: #94a3b8; }
+.emptyState p { font-size: 0.85rem; font-weight: 600; }
+
+/* ── Profile Drawer ──────────────────────────────────────────────── */
+.drawerBackdrop {
+  position: fixed; inset: 0; background: rgba(13, 11, 80, 0.25);
+  backdrop-filter: blur(2px); z-index: 40;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.backdropVisible { opacity: 1; pointer-events: all; }
+
+.drawer {
+  position: fixed; top: 0; right: 0; height: 100vh; width: 380px;
+  background: white; z-index: 50; box-shadow: -8px 0 40px rgba(13,11,80,0.12);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  display: flex; flex-direction: column; overflow: hidden;
+  border-left: 1px solid #e2e8f0;
+}
+.drawerOpen { transform: translateX(0); }
+
+/* Drawer Header */
+.drawerHeader {
+  display: flex; align-items: center; gap: 12px;
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid #f1f5f9;
+}
+.drawerClose {
+  background: #f1f5f9; border: none; width: 32px; height: 32px;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #64748b; transition: 0.15s; flex-shrink: 0;
+}
+.drawerClose:hover { background: #e2e8f0; color: #1e293b; }
+.drawerLabel { font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-unbounded); }
+
+/* Drawer Hero */
+.drawerHero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2rem 1.5rem 1.5rem;
+  background: linear-gradient(180deg, #f8fafc 0%, white 100%);
+  border-bottom: 1px solid #f1f5f9;
+  gap: 8px;
+}
+.drawerAvatar {
+  width: 80px; height: 80px; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+  box-shadow: 0 8px 24px rgba(13,11,80,0.15);
+}
+.drawerAvatarImg { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; }
+.drawerAvatarInitials { font-size: 1.4rem; font-weight: 800; color: white; letter-spacing: 0.02em; }
+.drawerName { font-family: var(--font-unbounded); font-size: 1rem; color: #0D0B50; text-align: center; margin: 0; }
+.drawerEmail { font-size: 0.78rem; color: #64748b; text-align: center; }
+.drawerStatusPill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; margin-top: 4px; }
+
+/* Drawer Body */
+.drawerBody { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+.drawerSection {}
+.drawerSectionTitle {
+  font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 12px; font-family: var(--font-unbounded);
+}
+
+.drawerInfoGrid { display: flex; flex-direction: column; gap: 0; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+.drawerInfoItem {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+.drawerInfoItem:last-child { border-bottom: none; }
+.drawerInfoItem:hover { background: #f8fafc; }
+.drawerInfoIcon { color: #94a3b8; flex-shrink: 0; }
+.drawerInfoItem > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.drawerInfoLabel { font-size: 0.68rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; }
+.drawerInfoValue { font-size: 0.85rem; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Drawer Action Buttons */
+.drawerActions { display: flex; flex-direction: column; gap: 10px; padding-top: 0.5rem; }
+.drawerActionPrimary {
+  background: #0D0B50; color: white; border: none; padding: 13px 20px;
+  border-radius: 12px; font-weight: 700; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer; transition: 0.2s;
+}
+.drawerActionPrimary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.drawerActionSecondary {
+  background: transparent; border: 1.5px solid #e2e8f0; padding: 12px 20px;
+  border-radius: 12px; font-weight: 700; font-size: 0.85rem;
+  cursor: pointer; transition: 0.2s;
+}
+.deactivateBtn { color: #ef4444; border-color: #fecaca; }
+.deactivateBtn:hover { background: #fef2f2; }
+.activateBtn { color: #16a34a; border-color: #bbf7d0; }
+.activateBtn:hover { background: #f0fdf4; }
+
+/* ── Error State ─────────────────────────────────────────────────── */
+.errorState { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; gap: 10px; color: #ef4444; text-align: center; }
+.errorTitle { font-weight: 800; font-size: 0.9rem; color: #1e293b; }
+.errorMessage { font-size: 0.78rem; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 16px; max-width: 420px; word-break: break-all; font-family: monospace; }
+.retryBtn { margin-top: 4px; display: flex; align-items: center; gap: 6px; background: #0D0B50; color: white; border: none; padding: 8px 18px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.retryBtn:hover { opacity: 0.85; }

@@ -1,0 +1,86 @@
+/* Page-level layout only — card/grid/modal styles live in their own component CSS files */
+
+.wrapper {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-family: var(--font-unbounded);
+  font-size: 1.4rem;
+  color: #0D0B50;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.topActions {
+  display: flex;
+  gap: 12px;
+}
+
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.searchBox input {
+  border: none;
+  background: transparent;
+  padding: 10px;
+  font-size: 0.85rem;
+  width: 220px;
+  outline: none;
+}
+
+.addBtn {
+  background: #0D0B50;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.addBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(13, 11, 80, 0.2);
+}
+
+.contentCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+.cardTitle {
+  font-family: var(--font-unbounded);
+  font-size: 0.85rem;
+  color: #0D0B50;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}

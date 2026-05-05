@@ -1,0 +1,192 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 11, 80, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 2rem;
+}
+
+.content {
+  background: white;
+  width: 100%;
+  max-width: 1100px;
+  border-radius: 28px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(13, 11, 80, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  font-family: var(--font-unbounded);
+  font-size: 1.1rem;
+  color: #0D0B50;
+  margin-bottom: 3px;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: #f1f5f9;
+  border: none;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: background 0.15s;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* 3-column layout: fields | fields | image */
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Image column — fills the full row height */
+.imageSection {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.imageSection .field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make the ImageUpload zone fill remaining space */
+.imageSection .field > :last-child {
+  flex: 1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper input,
+.inputWrapper textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 9px 0;
+  font-size: 0.9rem;
+  color: #1e293b;
+  outline: none;
+  font-family: inherit;
+  resize: none;
+}
+
+.line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #0D0B50;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.inputWrapper input:focus ~ .line,
+.inputWrapper textarea:focus ~ .line {
+  transform: scaleX(1);
+}
+
+/* Footer spans all 3 columns */
+.footer {
+  grid-column: span 3;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  padding: 10px 20px;
+}
+
+.submitBtn {
+  background: #0D0B50;
+  color: white;
+  border: none;
+  padding: 11px 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(13, 11, 80, 0.3);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
