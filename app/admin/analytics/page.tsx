@@ -1,53 +1,94 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
   ResponsiveContainer
 } from 'recharts';
-import { FileText, Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, Loader2, TrendingUp } from 'lucide-react';
 import AdminTabBar from '../components/AdminTabBar';
 import styles from './analytics.module.css';
 
 export default function AnalyticsPage() {
+  const router = useRouter();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+
+  const [isClient, setIsClient] = useState(false);
+  const [verifying, setVerifying] = useState(true);
   const [completedEvents, setCompletedEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
   useEffect(() => {
-    const fetchEventData = async () => {
-      // Strictly fetching events with 'completed' status
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('status', 'completed')
-        .order('event_date', { ascending: false });
+    setIsClient(true);
+  }, []);
 
-      if (!error) {
-        setCompletedEvents(data || []);
-      }
-      setLoading(false);
-    };
+  const fetchEventData = useCallback(async () => {
+    // Strictly fetching events with 'completed' status
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('status', 'completed')
+      .order('event_date', { ascending: false });
 
-    fetchEventData();
+    if (!error) {
+      setCompletedEvents(data || []);
+    }
+    setLoading(false);
   }, [supabase]);
 
-  if (loading) return <div className={styles.loading}>Analyzing database...</div>;
+  useEffect(() => {
+    if (!isClient) return;
+
+    const checkAdminAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+
+      if (!user || user.email !== adminEmail) {
+        router.replace('/login');
+        return;
+      }
+      
+      await fetchEventData();
+      setVerifying(false);
+    };
+
+    checkAdminAuth();
+  }, [isClient, router, supabase, fetchEventData]);
+
+  // Loading state with obsidian theme styling
+  if (!isClient || verifying) {
+    return (
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        background: '#0D0B50' 
+      }}>
+        <Loader2 className={styles.spinner} size={32} color="white" />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Event Performance</h1>
+        <div className={styles.titleRow}>
+          <TrendingUp size={24} className={styles.headerIcon} />
+          <h1 className={styles.title}>Event Performance</h1>
+        </div>
         <p className={styles.subtitle}>Detailed analytics for institutional completed activities</p>
       </header>
 
       <div className={styles.threeColumnGrid}>
-        {completedEvents.length === 0 ? (
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <Loader2 className={styles.spinner} />
+            <span>Analyzing database...</span>
+          </div>
+        ) : completedEvents.length === 0 ? (
           <div className={styles.emptyState}>No completed events found.</div>
         ) : (
           completedEvents.map((event) => (
@@ -81,7 +122,11 @@ export default function AnalyticsPage() {
                       <YAxis axisLine={false} tickLine={false} hide />
                       <Tooltip 
                         cursor={{ fill: 'rgba(13, 11, 80, 0.05)' }}
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                        contentStyle={{ 
+                          borderRadius: '8px', 
+                          border: 'none', 
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                        }}
                       />
                       <Bar 
                         dataKey="count" 
@@ -93,7 +138,6 @@ export default function AnalyticsPage() {
                   </ResponsiveContainer>
                 </div>
               </div>
-
             </div>
           ))
         )}

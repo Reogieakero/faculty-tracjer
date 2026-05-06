@@ -1,32 +1,50 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
 import { 
-  Users, 
-  CalendarDays, 
-  MessageSquareQuote, 
-  Activity,
-  Bell, 
-  Settings,
-  Search,
-  Filter,
-  MoreVertical,
-  Circle,
-  TrendingUp
+  Users, CalendarDays, MessageSquareQuote, Activity,
+  Bell, Settings, Search, Circle, TrendingUp, MoreVertical 
 } from 'lucide-react';
-
 import AdminTabBar from '../components/AdminTabBar';
 import styles from './dashboard.module.css';
 
 export default function AdminDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   useEffect(() => {
-    setMounted(true);
+    const checkAdminAccess = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+
+      if (!user || user.email !== adminEmail) {
+        router.replace('/login');
+        return;
+      }
+
+      setLoading(false);
+    };
+
+    checkAdminAccess();
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [router, supabase]);
+
+  if (loading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0B50' }}>
+        <div className="loader"></div>
+      </div>
+    );
+  }
 
   const stats = [
     { label: 'Total Registered', value: '1,284', icon: <Users size={20} />, change: '+12% this month' },
@@ -48,19 +66,9 @@ export default function AdminDashboard() {
         <div className={styles.welcomeSection}>
           <h1 className={styles.title}>Admin Command Center</h1>
           <p className={styles.subtitle}>
-            {mounted ? (
-              `${currentTime.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })} • ${currentTime.toLocaleTimeString()}`
-            ) : (
-              "Initializing system time..."
-            )}
+            {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • {currentTime.toLocaleTimeString()}
           </p>
         </div>
-        
         <div className={styles.topActions}>
           <div className={styles.searchBox}>
             <Search size={18} />
@@ -87,7 +95,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className={styles.mainContentGrid}>
-        {/* Left Section: Live Scanning Logs */}
         <div className={`${styles.contentCard} ${styles.large}`}>
           <div className={styles.cardHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -129,17 +136,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Right Section: Real-time Analytics Graph */}
         <div className={styles.contentCard}>
           <div className={styles.cardHeader}>
             <h3 className={styles.cardTitle}>Scan Momentum</h3>
             <TrendingUp size={18} color="#0D0B50" />
           </div>
-          
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '10px 0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
               <div>
-                <p style={{ fontSize: '0.65rem', fontWeight: '800', color: '#94a3b8' }}>PEAK SCAN RATE</p>
+                <p style={{ fontSize: '0.65rem', fontWeight: '800', color: '#94a3b8' }}>PEAK RATE</p>
                 <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0D0B50' }}>12/min</h4>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -147,8 +152,6 @@ export default function AdminDashboard() {
                 <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0D0B50' }}>8.4s</h4>
               </div>
             </div>
-
-            {/* Custom SVG Line Graph for "Pro-Level" Look */}
             <svg viewBox="0 0 200 100" style={{ width: '100%', height: '120px', overflow: 'visible' }}>
               <defs>
                 <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -156,30 +159,19 @@ export default function AdminDashboard() {
                   <stop offset="100%" stopColor="rgba(13, 11, 80, 0)" />
                 </linearGradient>
               </defs>
-              <path 
-                d="M0,80 Q25,75 50,40 T100,60 T150,20 T200,50" 
-                fill="none" 
-                stroke="#0D0B50" 
-                strokeWidth="3" 
-                strokeLinecap="round"
-              />
-              <path 
-                d="M0,80 Q25,75 50,40 T100,60 T150,20 T200,50 L200,100 L0,100 Z" 
-                fill="url(#gradient)" 
-              />
+              <path d="M0,80 Q25,75 50,40 T100,60 T150,20 T200,50" fill="none" stroke="#0D0B50" strokeWidth="3" strokeLinecap="round" />
+              <path d="M0,80 Q25,75 50,40 T100,60 T150,20 T200,50 L200,100 L0,100 Z" fill="url(#gradient)" />
               <circle cx="150" cy="20" r="4" fill="#0D0B50" stroke="white" strokeWidth="2" />
             </svg>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-              <span style={{ fontSize: '0.6rem', fontWeight: '700', color: '#cbd5e1' }}>1:00 PM</span>
-              <span style={{ fontSize: '0.6rem', fontWeight: '700', color: '#cbd5e1' }}>1:30 PM</span>
-              <span style={{ fontSize: '0.6rem', fontWeight: '700', color: '#0D0B50' }}>NOW</span>
-            </div>
           </div>
         </div>
       </div>
 
       <AdminTabBar />
+      <style jsx>{`
+        .loader { border: 3px solid rgba(255, 255, 255, 0.1); border-radius: 50%; border-top: 3px solid #ffffff; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 }

@@ -24,8 +24,6 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      // ── 1. Send credentials to the server-side API route ────────────
-      //    ADMIN_EMAIL and ADMIN_PASSWORD never leave the server
       const res = await fetch('/api/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,8 +41,6 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // ── 2. Set the Supabase session on the client ────────────────────
-      //    This is what makes every subsequent fetch authenticated
       const { error: sessionError } = await supabase.auth.setSession(result.session);
 
       if (sessionError) {
@@ -56,7 +52,6 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // ── 3. All good — navigate to dashboard ──────────────────────────
       sileo.success({
         title: 'Access Granted',
         description: 'Welcome to the Command Center.',

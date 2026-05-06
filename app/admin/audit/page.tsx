@@ -1,16 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { 
   FileText, Search, Download, 
-  Eye, FileUp, MoreVertical, 
-  Calendar, X, UploadCloud
+  Eye, FileUp, Calendar, X, UploadCloud, Loader2
 } from 'lucide-react';
 import AdminTabBar from '../components/AdminTabBar';
 import styles from './audit.module.css';
 
 export default function AuditPage() {
+  const router = useRouter();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+
+  const [isClient, setIsClient] = useState(false);
+  const [verifying, setVerifying] = useState(true);
   const [files, setFiles] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -21,33 +26,44 @@ export default function AuditPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [description, setDescription] = useState('');
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  const fetchAuditFiles = async () => {
+  const fetchAuditFiles = useCallback(async () => {
     const { data, error } = await supabase
       .from('audit_documents')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (!error) setFiles(data || []);
-  };
+  }, [supabase]);
 
   useEffect(() => {
-    fetchAuditFiles();
-  }, [supabase]);
+    if (!isClient) return;
+
+    const checkAdminAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+
+      if (!user || user.email !== adminEmail) {
+        router.replace('/login');
+        return;
+      }
+      
+      await fetchAuditFiles();
+      setVerifying(false);
+    };
+
+    checkAdminAuth();
+  }, [isClient, router, supabase, fetchAuditFiles]);
 
   const handleDownload = async (filePath: string, fileName: string) => {
     const { data, error } = await supabase.storage
       .from('documents')
       .download(filePath);
 
-    if (error) {
-      console.error('Download error:', error);
-      return;
-    }
+    if (error) return;
 
     const url = window.URL.createObjectURL(data);
     const link = document.createElement('a');
@@ -112,6 +128,14 @@ export default function AuditPage() {
     f.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (!isClient || verifying) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0B50' }}>
+        <Loader2 className={styles.spinner} size={32} color="white" />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
@@ -119,7 +143,6 @@ export default function AuditPage() {
           <h1 className={styles.title}>System Audit Trail</h1>
           <p className={styles.subtitle}>Institutional records and transparency logs</p>
         </div>
-        
         <div className={styles.topActions}>
           <div className={styles.searchBox}>
             <Search size={18} />
@@ -190,7 +213,6 @@ export default function AuditPage() {
         </div>
       </div>
 
-      {/* Upload Modal */}
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
@@ -198,18 +220,16 @@ export default function AuditPage() {
               <h2 className={styles.modalTitle}>Upload Audit Report</h2>
               <button onClick={closeModal} className={styles.closeBtn}><X size={20} /></button>
             </div>
-            
             <div className={styles.modalBody}>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Audit Description</label>
                 <textarea 
                   className={styles.textarea} 
-                  placeholder="Enter a brief summary of this audit file..."
+                  placeholder="Enter a brief summary..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-
               <div className={styles.uploadArea}>
                 <input 
                   type="file" 
@@ -228,7 +248,6 @@ export default function AuditPage() {
                 </label>
               </div>
             </div>
-
             <div className={styles.modalFooter}>
               <button className={styles.cancelBtn} onClick={closeModal}>Cancel</button>
               <button 
@@ -243,7 +262,6 @@ export default function AuditPage() {
         </div>
       )}
 
-      {/* PDF Preview Modal */}
       {isPreviewOpen && (
         <div className={styles.modalOverlay} onClick={() => setIsPreviewOpen(false)}>
           <div className={styles.previewContainer} onClick={(e) => e.stopPropagation()}>
@@ -259,7 +277,6 @@ export default function AuditPage() {
           </div>
         </div>
       )}
-
       <AdminTabBar />
     </div>
   );

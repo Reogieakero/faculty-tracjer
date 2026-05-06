@@ -27,9 +27,9 @@ export default function LoginPage() {
       sileo.success({ title: "Welcome back!" });
       window.location.href = '/dashboard';
     } catch (error: any) {
-      sileo.error({ 
-        title: "Login Failed", 
-        description: "Invalid credentials or account not found." 
+      sileo.error({
+        title: "Login Failed",
+        description: "Invalid credentials or account not found.",
       });
     } finally {
       setIsLoading(false);
@@ -41,7 +41,7 @@ export default function LoginPage() {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: { prompt: 'select_account' }
+        queryParams: { prompt: 'select_account' },
       },
     });
   };
@@ -51,8 +51,8 @@ export default function LoginPage() {
       <div className={styles.leftPanel}>
         <svg className={styles.constellationBg} viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
           <path className={styles.constelLine} d="M100,200 L300,150 L250,400 Z" fill="none" />
-          <path className={styles.constelLine} d="M300,150 L550,200 L480,350 L250,400 Z" fill="none" opacity="0.5"/>
-          <path className={styles.constelLine} d="M550,200 L800,100 L900,300 Z" fill="none"/>
+          <path className={styles.constelLine} d="M300,150 L550,200 L480,350 L250,400 Z" fill="none" opacity="0.5" />
+          <path className={styles.constelLine} d="M550,200 L800,100 L900,300 Z" fill="none" />
           <circle className={styles.constelNode} cx="100" cy="200" r="3" />
           <circle className={styles.constelNode} cx="300" cy="150" r="4" />
           <circle className={styles.constelNode} cx="550" cy="200" r="3" />
@@ -69,7 +69,7 @@ export default function LoginPage() {
             <span className={styles.accent}>LIBERALIS tracker</span>
           </h2>
           <p className={styles.heroDesc}>
-            Access your personalized academic dashboard to manage attendance, 
+            Access your personalized academic dashboard to manage attendance,
             track program progress, and stay updated with campus announcements.
           </p>
         </div>
@@ -87,13 +87,13 @@ export default function LoginPage() {
               <label className={styles.label}>Email Address</label>
               <div className={styles.inputWrapper}>
                 <Mail className={styles.inputIcon} size={18} />
-                <input 
-                  type="email" 
-                  className={styles.lineInput} 
-                  placeholder="name@dorsu.edu.ph" 
+                <input
+                  type="email"
+                  className={styles.lineInput}
+                  placeholder="name@dorsu.edu.ph"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required 
+                  required
                 />
                 <span className={styles.inputLine}></span>
               </div>
@@ -103,17 +103,17 @@ export default function LoginPage() {
               <label className={styles.label}>Password</label>
               <div className={styles.inputWrapper}>
                 <Lock className={styles.inputIcon} size={18} />
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  className={styles.lineInput} 
-                  placeholder="••••••••" 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className={styles.lineInput}
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
+                  required
                 />
-                <button 
-                  type="button" 
-                  className={styles.eyeToggle} 
+                <button
+                  type="button"
+                  className={styles.eyeToggle}
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -125,7 +125,7 @@ export default function LoginPage() {
             <button type="submit" className={styles.submitBtn} disabled={isLoading}>
               {isLoading ? 'Verifying...' : 'Sign In'}
             </button>
-            
+
             <div className={styles.divider}>
               <span>or</span>
             </div>

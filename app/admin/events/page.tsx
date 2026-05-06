@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Search } from 'lucide-react';
-import { createBrowserClient } from '@supabase/ssr';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { Plus, Search, Loader2 } from 'lucide-react';
+import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { useEvents, Event } from './hooks/useEvents';
 import EventGrid from './components/EventGrid/EventGrid';
 import EventModal from './components/EventModal/EventModal';
@@ -23,10 +24,11 @@ const STATUS_FILTERS = [
 ];
 
 export default function EventsAdminPage() {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const router = useRouter();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+  
+  const [isClient, setIsClient] = useState(false);
+  const [verifying, setVerifying] = useState(true);
 
   const {
     filteredEvents,
@@ -42,6 +44,27 @@ export default function EventsAdminPage() {
   const [activeStatus, setActiveStatus] = useState('upcoming');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
+    const checkAdminAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+
+      if (!user || user.email !== adminEmail) {
+        router.replace('/login');
+        return;
+      }
+      setVerifying(false);
+    };
+
+    checkAdminAuth();
+  }, [isClient, router, supabase]);
 
   const openCreate = () => { setEditingEvent(null); setIsModalOpen(true); };
   const openEdit = (event: Event) => { setEditingEvent(event); setIsModalOpen(true); };
@@ -61,6 +84,14 @@ export default function EventsAdminPage() {
     const matchesStatus = event.status === activeStatus;
     return matchesProgram && matchesStatus;
   });
+
+  if (!isClient || verifying) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0B50' }}>
+        <Loader2 className={styles.spinner} size={32} color="white" />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>

@@ -1,20 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import Sidebar from '@/components/dashboard/Sidebar';
-import { 
-  Users, 
-  CheckCircle, 
-  XCircle, 
-  Zap, 
-  IdCard, 
-  FileText, 
-  Eye, 
-  X, 
-  ShieldCheck 
-} from 'lucide-react';
+import { Users, CheckCircle, XCircle, Zap, IdCard, FileText, Eye, X, ShieldCheck } from 'lucide-react';
 import styles from './dashboard.module.css';
 import { useStudentProfile } from './hooks/useStudentProfile';
 import { FlippingStatCard } from './components/FlippingStatCard';
@@ -23,6 +14,7 @@ import AttendancePieChart from './components/AttendancePieChart';
 
 export default function DashboardPage() {
   const { user, loading, updateProfile } = useStudentProfile();
+  const router = useRouter();
   const [auditFiles, setAuditFiles] = useState<any[]>([]);
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [totalEvents, setTotalEvents] = useState<number>(0);
@@ -33,7 +25,15 @@ export default function DashboardPage() {
   );
 
   useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login');
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
     const fetchDashboardData = async () => {
+      if (!user) return;
+
       const { data: audits } = await supabase
         .from('audit_documents')
         .select('*')
@@ -51,12 +51,22 @@ export default function DashboardPage() {
       }
     };
 
-    if (!loading) {
+    if (!loading && user) {
       fetchDashboardData();
     }
   }, [supabase, user, loading]);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   const openOverlay = (filePath: string) => {
     const { data } = supabase.storage.from('documents').getPublicUrl(filePath);
@@ -64,7 +74,7 @@ export default function DashboardPage() {
   };
 
   const stats = [
-    { label: 'Total Events', val: totalEvents.toString(), icon: <Users size={16} />, desc: 'Events for your program and general sessions.' },
+    { label: 'Total Events', val: totalEvents.toString(), icon: <Users size={16} />, desc: 'Events for your program.' },
     { label: 'Attendance', val: '88%', icon: <CheckCircle size={16} />, desc: 'Verified hours recorded.' },
     { label: 'Absences', val: '04', icon: <XCircle size={16} />, desc: 'Requires documentation.' },
     { label: 'Student ID', val: user?.studentId || '—', icon: <IdCard size={16} />, desc: 'Official Student ID.' },
@@ -96,12 +106,12 @@ export default function DashboardPage() {
 
         <section className={styles.statsGrid}>
           {stats.map((stat, i) => (
-            <FlippingStatCard 
-              key={i} 
-              label={stat.label} 
-              val={stat.val} 
-              icon={stat.icon} 
-              description={stat.desc} 
+            <FlippingStatCard
+              key={i}
+              label={stat.label}
+              val={stat.val}
+              icon={stat.icon}
+              description={stat.desc}
             />
           ))}
         </section>
@@ -157,37 +167,49 @@ export default function DashboardPage() {
         </div>
 
         <section className={styles.announcementCard} style={{ marginTop: '1.25rem', gridColumn: 'span 12' }}>
-           <AttendancePieChart totalEvents={totalEvents} attendancePercent={88} />
+          <AttendancePieChart totalEvents={totalEvents} attendancePercent={88} />
         </section>
       </div>
 
       {selectedPdf && (
         <div className={styles.overlay} onClick={() => setSelectedPdf(null)}>
-          <div className={styles.pdfModal} onClick={(e) => e.stopPropagation()} style={{ 
-            background: 'white', 
-            width: '90%', 
-            height: '85vh', 
-            maxWidth: '1000px', 
-            borderRadius: '16px', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            overflow: 'hidden' 
-          }}>
-            <div className={styles.modalHeader} style={{ 
-              padding: '1.25rem', 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              borderBottom: '1px solid #f1f5f9' 
-            }}>
+          <div
+            className={styles.pdfModal}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'white',
+              width: '90%',
+              height: '85vh',
+              maxWidth: '1000px',
+              borderRadius: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              className={styles.modalHeader}
+              style={{
+                padding: '1.25rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid #f1f5f9',
+              }}
+            >
               <h2 style={{ margin: 0, fontSize: '1rem' }}>Document Preview</h2>
-              <button onClick={() => setSelectedPdf(null)} style={{ 
-                background: '#f1f5f9', 
-                border: 'none', 
-                padding: '8px', 
-                borderRadius: '8px', 
-                cursor: 'pointer' 
-              }}><X size={20} /></button>
+              <button
+                onClick={() => setSelectedPdf(null)}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  padding: '8px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={20} />
+              </button>
             </div>
             <iframe src={selectedPdf} style={{ flex: 1, width: '100%', border: 'none' }} title="Audit PDF" />
           </div>
@@ -195,4 +217,4 @@ export default function DashboardPage() {
       )}
     </DashboardLayout>
   );
-}   
+}

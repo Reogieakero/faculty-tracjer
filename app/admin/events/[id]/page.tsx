@@ -1,30 +1,52 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { createBrowserClient } from '@supabase/ssr';
+import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { 
   ArrowLeft, Calendar, MapPin, Clock, Users, 
-  ExternalLink, Share2, ShieldCheck, Info,
-  LayoutDashboard, Settings, X, Search, CheckCircle2
+  Share2, ShieldCheck, Info,
+  LayoutDashboard, Settings, X, Search, CheckCircle2, Loader2
 } from 'lucide-react';
 import styles from './eventDetails.module.css';
 
 export default function EventDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+
+  const [isClient, setIsClient] = useState(false);
+  const [verifying, setVerifying] = useState(true);
   const [event, setEvent] = useState<any>(null);
   const [attendees, setAttendees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+
+    const checkAdminAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+
+      if (!user || user.email !== adminEmail) {
+        router.replace('/login');
+        return;
+      }
+      setVerifying(false);
+    };
+
+    checkAdminAuth();
+  }, [isClient, router, supabase]);
+
+  useEffect(() => {
+    if (!isClient || verifying) return;
+
     const fetchEventData = async () => {
       const { data: eventData } = await supabase
         .from('events')
@@ -50,13 +72,22 @@ export default function EventDetailsPage() {
       if (attendanceData) setAttendees(attendanceData);
       setLoading(false);
     };
+
     fetchEventData();
-  }, [id, supabase]);
+  }, [id, supabase, isClient, verifying]);
 
   const filteredAttendees = attendees.filter(item => 
     item.students?.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.students?.student_id.includes(searchTerm)
   );
+
+  if (!isClient || verifying) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0B50' }}>
+        <Loader2 className={styles.spinner} size={32} color="white" />
+      </div>
+    );
+  }
 
   if (loading) return <div className={styles.loaderWrapper}><div className={styles.spinner} /></div>;
   if (!event) return <div className={styles.errorState}>Event not found.</div>;

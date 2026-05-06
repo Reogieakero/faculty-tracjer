@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import { 
-  Search, UserPlus, Mail, GraduationCap, Circle, Loader2,
+  Search, Mail, GraduationCap, Circle, Loader2,
   Inbox, X, Calendar, Clock, Shield, ChevronRight, Hash,
   AlertCircle, RefreshCw
 } from 'lucide-react';
@@ -145,21 +146,46 @@ function ProfileDrawer({ student, onClose }: { student: Student | null; onClose:
 }
 
 export default function StudentsPage() {
-  const supabase = createBrowserClient(
+  const router = useRouter();
+  
+  const supabase = useMemo(() => createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  ), []);
 
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const tabs = ['All', 'BSIT', 'DevCom', 'PolSci', 'Psych'];
 
+  useEffect(() => {
+    if (!isClient) return;
+
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+
+      if (!user || user.email !== adminEmail) {
+        router.replace('/login');
+        return;
+      }
+      setVerifying(false);
+    };
+    checkAuth();
+  }, [isClient, router, supabase]);
+
   const fetchStudents = useCallback(async () => {
+    if (verifying || !isClient) return;
     setLoading(true);
     setError(null);
     try {
@@ -171,22 +197,24 @@ export default function StudentsPage() {
       if (activeTab !== 'All') query = query.eq('program', activeTab);
 
       const { data, error: sbError } = await query;
-
-      if (sbError) {
-        setError(`${sbError.message}`);
-        setStudents([]);
-        return;
-      }
+      if (sbError) throw sbError;
       setStudents(data ?? []);
     } catch (err: any) {
-      setError(`${err?.message ?? String(err)}`);
-      setStudents([]);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [activeTab]);
+  }, [activeTab, verifying, isClient, supabase]);
 
   useEffect(() => { fetchStudents(); }, [fetchStudents]);
+
+  if (!isClient || verifying) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0B50' }}>
+        <Loader2 className={styles.spinner} size={32} color="white" />
+      </div>
+    );
+  }
 
   const filteredStudents = students.filter(s =>
     s.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -212,9 +240,7 @@ export default function StudentsPage() {
         <div className={styles.cardHeader}>
           <div>
             <h3 className={styles.cardTitle}>Student Records</h3>
-            {!loading && !error && (
-              <p className={styles.recordCount}>{filteredStudents.length} records</p>
-            )}
+            {!loading && !error && ( <p className={styles.recordCount}>{filteredStudents.length} records</p> )}
           </div>
           <div className={styles.tabSelector}>
             {tabs.map((tab) => (
@@ -270,11 +296,7 @@ export default function StudentsPage() {
                         <GraduationCap size={14} /> {student.program || 'Unassigned'}
                       </div>
                     </td>
-                    <td>
-                      <button className={styles.actionBtn}>
-                        <ChevronRight size={16} />
-                      </button>
-                    </td>
+                    <td><button className={styles.actionBtn}><ChevronRight size={16} /></button></td>
                   </tr>
                 ))}
               </tbody>
@@ -287,7 +309,6 @@ export default function StudentsPage() {
           )}
         </div>
       </div>
-
       <AdminTabBar />
       <ProfileDrawer student={selectedStudent} onClose={() => setSelectedStudent(null)} />
     </div>
