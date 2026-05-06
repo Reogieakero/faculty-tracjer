@@ -7,10 +7,8 @@ export default function Footer() {
       <div className={styles.container}>
         <div className={styles.top}>
           <div className={styles.brand}>
-            <div className={styles.logoIcon}>
-              <BarChart3 size={24} strokeWidth={2.5} />
-            </div>
-            <span className={styles.logoText}>PolyTrack</span>
+            <span className={styles.logoText}>LIBERALIS
+tracker</span>
           </div>
           <p className={styles.tagline}>
             Simplifying academic program management for faculty across all disciplines.
@@ -28,7 +26,7 @@ export default function Footer() {
             <a href="#stats">Statistics</a>
             <a href="#">Pricing</a>
           </div>
-          <div className={styles.col}>
+          {/* <div className={styles.col}>
             <h4>Programs</h4>
             <a href="#">Political Science</a>
             <a href="#">Development Communication</a>
@@ -41,12 +39,12 @@ export default function Footer() {
             <a href="#">Contact Us</a>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
-          </div>
+          </div> */}
         </div>
 
         <div className={styles.bottom}>
-          <span>© 2025 PolyTrack. All rights reserved.</span>
-          <span>Built for the Polytechnic community.</span>
+          <span>© 2026 Liberalis. All rights reserved.</span>
+          <span>Built for the Liberal community.</span>
         </div>
       </div>
     </footer>

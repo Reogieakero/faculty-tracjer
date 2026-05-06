@@ -1,4 +1,5 @@
 import styles from './Hero.module.css';
+import { BookOpen } from 'lucide-react';
 
 export default function Hero() {
   return (
@@ -38,7 +39,7 @@ export default function Hero() {
         <circle className={styles.constelNode} cx="800" cy="850" r="3" />
         <circle className={styles.constelNode} cx="500" cy="950" r="3" filter="url(#glow)"/>
       </svg>
-
+      
       <div className={styles.heroContainer}>
         <div className={styles.leftPanel}>
           <h1 className={styles.heading}>
@@ -50,15 +51,27 @@ export default function Hero() {
             The streamlined platform for faculty to track attendance,
             send announcements, and manage academic programs efficiently.
           </p>
+
         </div>
 
         <div className={styles.rightPanel}>
-          <img
-            src="/hero-right.jfif"
-            alt="Dashboard preview"
-            className={styles.heroImage}
-          />
-          <p className={styles.visionText}>Vision</p>
+          {/* Dashboard Preview Elements */}
+          <div className={styles.previewCard}>
+            <div className={styles.previewHeader}>
+              <div className={styles.previewTitle}>Live Dashboard Preview</div>
+              <div className={styles.statusDot} />
+            </div>
+            <div className={styles.mockup}>
+              <div className={styles.mockupScreen}>
+                <div className={styles.mockupAttendance}>92% Attendance Today</div>
+                <div className={styles.mockupClass}>POLSCI 101 - International Relations</div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.badge}>
+            Built for PolSci • DevCom • Psychology
+          </div>
         </div>
       </div>
     </section>

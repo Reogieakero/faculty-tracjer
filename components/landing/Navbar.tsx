@@ -29,10 +29,7 @@ export default function Navbar() {
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.navContainer}>
         <Link href="/" className={styles.logo}>
-          <div className={styles.logoIcon}>
-            <LayoutDashboard size={24} />
-          </div>
-          <span className={styles.logoText}>PolyTrack</span>
+          <span className={styles.logoText}>Liberalis Tracker</span>
         </Link>
 
         <div className={`${styles.navLinks} ${isOpen ? styles.active : ''}`}>

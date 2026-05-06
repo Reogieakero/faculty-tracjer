@@ -9,7 +9,7 @@ export default function CTA() {
           <div className={styles.glow} />
           
           <span className={styles.pill}>
-            <Sparkles size={14} /> Available for Liberal Arts
+            <Sparkles size={14} /> Available for Liberal 
           </span>
           
           <h2 className={styles.title}>
@@ -17,21 +17,15 @@ export default function CTA() {
           </h2>
           
           <p className={styles.subtitle}>
-            Join the faculty and students already using PolyTrack. 
+            Join the faculty and students already using LIBERALIS
+tracker. 
             Streamline your program today.
           </p>
           
-          <div className={styles.actions}>
-            <button className={styles.primaryBtn}>
-              Register Account <ArrowRight size={18} />
-            </button>
-            <button className={styles.secondaryBtn}>
-              Read User Manual
-            </button>
-          </div>
+          
           
           <p className={styles.footnote}>
-            ✓ Student QR-ID System &nbsp;·&nbsp; ✓ Faculty Dashboard &nbsp;·&nbsp; ✓ Program Analytics
+            ✓ Student QR-ID System &nbsp;·&nbsp; ✓ Faculty Dashboard
           </p>
         </div>
       </div>

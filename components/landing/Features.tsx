@@ -16,22 +16,17 @@ const features = [
   {
     icon: <BellRing size={24} />,
     title: 'Posting Announcements',
-    desc: 'Broadcast critical updates to entire programs or specific classes instantly. Keep every student informed with a centralized feed.',
+    desc: 'Broadcast updates to entire faculty or specific program instantly. Keep every student informed with a centralized feed.',
   },
   {
     icon: <BarChart3 size={24} />,
     title: 'Analytics Visualization',
-    desc: 'Transform raw data into actionable insights. Visualize attendance trends and engagement through intuitive, clean dashboards.',
+    desc: 'Visualize attendance trends and engagement through intuitive, clean dashboards.',
   },
   {
     icon: <ShieldCheck size={24} />,
     title: 'RBAC Role Management',
     desc: 'Secure access control with Role-Based Access. Ensure faculty and administrators only access what they are authorized to.',
-  },
-  {
-    icon: <FileText size={24} />,
-    title: 'Automated Reporting',
-    desc: 'Generate comprehensive attendance summaries in one click. Export to PDF for easy submission to your department.',
   }
 ];
 

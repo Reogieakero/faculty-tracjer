@@ -15,12 +15,12 @@ const studentSteps = [
   {
     icon: <Bell size={24} />,
     title: 'Stay Notified',
-    desc: 'Receive real-time announcements from your instructors and program chairs directly on your student feed.',
+    desc: 'See announcements from your faculty and program chairs directly on your student feed.',
   },
   {
     icon: <LayoutDashboard size={24} />,
     title: 'Track Progress',
-    desc: 'Monitor your own attendance percentage and view academic logs to ensure you stay on track for the semester.',
+    desc: 'Monitor your own attendance percentage and view attebdabce logs to ensure you stay on track for the semester.',
   },
 ];
 
@@ -35,7 +35,7 @@ export default function HowItWorks() {
             <span className={styles.accent}>just a few steps</span>
           </h2>
           <p className={styles.subtitle}>
-            Simplified onboarding for Liberal Arts students. No more manual sign-in sheets.
+            Simplified onboarding for Liberal students. No more manual sign-in sheets.
           </p>
         </div>
 
