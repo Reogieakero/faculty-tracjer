@@ -32,7 +32,7 @@ export default function EventDetailsPage() {
 
     const checkAdminAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@dorsu.edu.ph";
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@dorsu.edu.ph';
 
       if (!user || user.email !== adminEmail) {
         router.replace('/login');
@@ -48,37 +48,41 @@ export default function EventDetailsPage() {
     if (!isClient || verifying) return;
 
     const fetchEventData = async () => {
-      const { data: eventData } = await supabase
+      const { data: eventData, error: eventError } = await supabase
         .from('events')
         .select('*')
         .eq('id', id)
         .single();
 
-      const { data: attendanceData } = await supabase
-        .from('attendance')
+      const { data: scanData, error: scanError } = await supabase
+        .from('scan_logs')
         .select(`
           id,
           scanned_at,
           students (
+            id,
             full_name,
             student_id,
-            program,
-            year_level
+            program
           )
         `)
-        .eq('event_id', id);
+        .eq('event_id', id)
+        .order('scanned_at', { ascending: false });
+
+      if (eventError) console.error('Event fetch error:', eventError);
+      if (scanError) console.error('Scan logs fetch error:', scanError);
 
       if (eventData) setEvent(eventData);
-      if (attendanceData) setAttendees(attendanceData);
+      if (scanData) setAttendees(scanData);
       setLoading(false);
     };
 
     fetchEventData();
   }, [id, supabase, isClient, verifying]);
 
-  const filteredAttendees = attendees.filter(item => 
-    item.students?.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.students?.student_id.includes(searchTerm)
+  const filteredAttendees = attendees.filter(item =>
+    item.students?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.students?.student_id?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!isClient || verifying) {
@@ -118,7 +122,13 @@ export default function EventDetailsPage() {
             <div className={styles.metaRow}>
               <div className={styles.metaItem}>
                 <Calendar size={16} />
-                <span>{new Date(event.event_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span>
+                  {new Date(event.event_date).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
               <div className={styles.metaItem}>
                 <MapPin size={16} />
@@ -167,7 +177,7 @@ export default function EventDetailsPage() {
               <div className={styles.timelineItem}>
                 <Clock size={16} />
                 <div>
-                  <p className={styles.timeVal}>{event.start_time} - {event.end_time || 'Finish'}</p>
+                  <p className={styles.timeVal}>{event.start_time} — {event.end_time || 'Finish'}</p>
                   <p className={styles.timeLabel}>Local Time</p>
                 </div>
               </div>
@@ -198,41 +208,55 @@ export default function EventDetailsPage() {
 
             <div className={styles.modalSearch}>
               <Search size={18} />
-              <input 
-                type="text" 
-                placeholder="Search by name or ID..." 
+              <input
+                type="text"
+                placeholder="Search by name or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
             <div className={styles.tableContainer}>
-              <table className={styles.attendanceTable}>
-                <thead>
-                  <tr>
-                    <th>Student Name</th>
-                    <th>Student ID</th>
-                    <th>Program</th>
-                    <th>Scan Time</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAttendees.map((record) => (
-                    <tr key={record.id}>
-                      <td className={styles.studentName}>{record.students?.full_name}</td>
-                      <td>{record.students?.student_id}</td>
-                      <td>{record.students?.program}</td>
-                      <td>{new Date(record.scanned_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                      <td>
-                        <span className={styles.presentBadge}>
-                          <CheckCircle2 size={12} /> Present
-                        </span>
-                      </td>
+              {filteredAttendees.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <Users size={32} />
+                  <p>{searchTerm ? 'No results found.' : 'No attendance records yet.'}</p>
+                </div>
+              ) : (
+                <table className={styles.attendanceTable}>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Student Name</th>
+                      <th>Student ID</th>
+                      <th>Program</th>
+                      <th>Scan Time</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredAttendees.map((record, index) => (
+                      <tr key={record.id}>
+                        <td className={styles.rowIndex}>{index + 1}</td>
+                        <td className={styles.studentName}>{record.students?.full_name ?? '—'}</td>
+                        <td>{record.students?.student_id ?? '—'}</td>
+                        <td>{record.students?.program ?? '—'}</td>
+                        <td>
+                          {new Date(record.scanned_at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </td>
+                        <td>
+                          <span className={styles.presentBadge}>
+                            <CheckCircle2 size={12} /> Present
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>

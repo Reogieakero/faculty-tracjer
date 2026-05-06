@@ -15,7 +15,18 @@ export function useStudentSettings() {
         .select('*')
         .eq('id', user.id)
         .single();
-      setStudent(data);
+      
+      if (data) {
+        setStudent(data);
+      } else {
+        setStudent({
+          full_name: user.user_metadata?.full_name || '',
+          email: user.email,
+          student_id: '',
+          program: '',
+          avatar_url: null
+        });
+      }
     }
     setLoading(false);
   }
@@ -48,11 +59,11 @@ export function useStudentSettings() {
         .update({ avatar_url: publicUrl })
         .eq('id', user.id);
 
-      if (updateError) throw updateError;
-
-      setStudent((prev: any) => ({ ...prev, avatar_url: publicUrl }));
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      if (!updateError) {
+        setStudent((prev: any) => ({ ...prev, avatar_url: publicUrl }));
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -72,11 +83,11 @@ export function useStudentSettings() {
         .update({ full_name: newName })
         .eq('id', user.id);
 
-      if (error) throw error;
-      
-      setStudent((prev: any) => ({ ...prev, full_name: newName }));
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      if (!error) {
+        setStudent((prev: any) => ({ ...prev, full_name: newName }));
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -84,5 +95,13 @@ export function useStudentSettings() {
     }
   };
 
-  return { student, loading, saveName, uploadAvatar, isSaving, showSuccess };
+  return { 
+    student, 
+    setStudent, 
+    loading, 
+    saveName, 
+    uploadAvatar, 
+    isSaving, 
+    showSuccess 
+  };
 }

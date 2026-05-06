@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, MapPin, Users, Edit3, Trash2, ImageOff, Clock, ExternalLink } from 'lucide-react';
+import { Calendar, MapPin, Users, Edit3, Trash2, ImageOff, Clock, ExternalLink, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { Event } from '../../hooks/useEvents';
 import styles from './EventCard.module.css';
 
@@ -13,15 +14,24 @@ interface EventCardProps {
 
 export default function EventCard({ event, onEdit, onDelete }: EventCardProps) {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const formattedDate = new Date(event.event_date).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric' 
+  const formattedDate = new Date(event.event_date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
   });
 
   const handleReadMore = () => {
     router.push(`/admin/events/${event.id}`);
   };
+
+  const maskedPassword = event.scanner_password
+    ? '••••••'
+    : '—';
+
+  const displayedPassword = showPassword
+    ? (event.scanner_password ?? '—')
+    : maskedPassword;
 
   return (
     <div className={styles.card}>
@@ -40,7 +50,7 @@ export default function EventCard({ event, onEdit, onDelete }: EventCardProps) {
 
       <div className={styles.body}>
         <h4 className={styles.title}>{event.title}</h4>
-        
+
         <div className={styles.infoGrid}>
           <div className={styles.infoRow}>
             <div className={styles.iconWrapper}>
@@ -71,6 +81,22 @@ export default function EventCard({ event, onEdit, onDelete }: EventCardProps) {
               {event.location || 'Remote / TBD'}
             </span>
           </div>
+
+          {event.scanner_password && (
+            <div className={`${styles.infoRow} ${styles.fullWidth} ${styles.passwordRow}`}>
+              <div className={styles.iconWrapper}>
+                <KeyRound size={14} />
+              </div>
+              <span className={styles.passwordDisplay}>{displayedPassword}</span>
+              <button
+                className={styles.eyeBtn}
+                onClick={() => setShowPassword((v) => !v)}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={styles.footer}>

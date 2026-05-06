@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Type, Calendar, Clock, GraduationCap, MapPin, AlignLeft, ImageIcon } from 'lucide-react';
+import { X, Type, Calendar, Clock, GraduationCap, MapPin, AlignLeft, ImageIcon, KeyRound, RefreshCw } from 'lucide-react';
 import { Event } from '../../hooks/useEvents';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
@@ -15,15 +15,21 @@ interface EventModalProps {
   onSave: (data: Partial<Event>) => Promise<void>;
 }
 
+function generatePassword(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 export default function EventModal({ editingEvent, onClose, onSave }: EventModalProps) {
   const [form, setForm] = useState({
-    title:       editingEvent?.title       ?? '',
-    event_date:  editingEvent?.event_date  ?? '',
-    start_time:  editingEvent?.start_time  ?? '',
-    program:     editingEvent?.program     ?? 'All',
-    location:    editingEvent?.location    ?? '',
-    description: editingEvent?.description ?? '',
-    image_url:   editingEvent?.image_url   ?? null as string | null,
+    title:                    editingEvent?.title                    ?? '',
+    event_date:               editingEvent?.event_date               ?? '',
+    start_time:               editingEvent?.start_time               ?? '',
+    program:                  editingEvent?.program                  ?? 'All',
+    location:                 editingEvent?.location                 ?? '',
+    description:              editingEvent?.description              ?? '',
+    image_url:                editingEvent?.image_url                ?? null as string | null,
+    scanner_password:         editingEvent?.scanner_password         ?? generatePassword(),
+    scanner_password_visible: editingEvent?.scanner_password_visible ?? false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -61,7 +67,6 @@ export default function EventModal({ editingEvent, onClose, onSave }: EventModal
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          {/* Col 1 — primary fields */}
           <div className={styles.section}>
             <div className={styles.field}>
               <label><Type size={14} /> Event Title</label>
@@ -95,9 +100,38 @@ export default function EventModal({ editingEvent, onClose, onSave }: EventModal
                 onChange={(v) => setForm((prev) => ({ ...prev, program: v }))}
               />
             </div>
+
+            <div className={styles.field}>
+              <label><KeyRound size={14} /> Scanner Password</label>
+              <div className={styles.passwordRow}>
+                <div className={styles.inputWrapper} style={{ flex: 1 }}>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    pattern="\d{6}"
+                    placeholder="6-digit code"
+                    value={form.scanner_password ?? ''}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setForm((prev) => ({ ...prev, scanner_password: val }));
+                    }}
+                    className={styles.passwordInput}
+                  />
+                  <span className={styles.line} />
+                </div>
+                <button
+                  type="button"
+                  className={styles.regenBtn}
+                  onClick={() => setForm((prev) => ({ ...prev, scanner_password: generatePassword() }))}
+                  title="Regenerate password"
+                >
+                  <RefreshCw size={14} />
+                </button>
+              </div>
+              <p className={styles.passwordHint}>Used by scanner to authenticate event check-ins.</p>
+            </div>
           </div>
 
-          {/* Col 2 — secondary fields */}
           <div className={styles.section}>
             <div className={styles.field}>
               <label><MapPin size={14} /> Location</label>
@@ -116,7 +150,6 @@ export default function EventModal({ editingEvent, onClose, onSave }: EventModal
             </div>
           </div>
 
-          {/* Col 3 — image */}
           <div className={styles.imageSection}>
             <div className={styles.field}>
               <label><ImageIcon size={14} /> Event Banner</label>

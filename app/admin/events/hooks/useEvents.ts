@@ -14,6 +14,8 @@ export interface Event {
   status: 'upcoming' | 'ongoing' | 'completed';
   program: string;
   image_url: string | null;
+  scanner_password: string | null;
+  scanner_password_visible: boolean;
 }
 
 export function useEvents() {

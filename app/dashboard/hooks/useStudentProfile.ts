@@ -1,46 +1,49 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
+export interface StudentUser {
+  name: string;
+  email: string;
+  studentId: string;
+  program: string;
+  avatarUrl: string;
+}
+
 export function useStudentProfile() {
-  const [user, setUser] = useState<{ 
-    name: string; 
-    email: string; 
-    studentId: string; 
-    program: string;
-    avatarUrl: string;
-  } | null>(null);
+  const [user, setUser] = useState<StudentUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   const getUserData = async () => {
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    if (authUser) {
+    setLoading(true);
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) { setLoading(false); return; }
+
       const { data: studentData } = await supabase
         .from('students')
         .select('student_id, full_name, program, avatar_url')
         .eq('id', authUser.id)
         .single();
 
-      const existingId = studentData?.student_id || authUser.user_metadata?.student_id || '';
-      const existingProgram = studentData?.program || authUser.user_metadata?.program || '';
-
       setUser({
         name: studentData?.full_name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
         email: authUser.email || '',
-        studentId: existingId,
-        program: existingProgram,
+        studentId: studentData?.student_id || authUser.user_metadata?.student_id || '',
+        program: studentData?.program || authUser.user_metadata?.program || '',
         avatarUrl: studentData?.avatar_url || '',
       });
+    } catch (err) {
+      console.error('Profile fetch error:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const updateProfile = async (id: string, prog: string) => {
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) return;
 
-    await supabase.auth.updateUser({
-      data: { student_id: id, program: prog }
-    });
+    await supabase.auth.updateUser({ data: { student_id: id, program: prog } });
 
     const { error } = await supabase
       .from('students')
@@ -57,9 +60,7 @@ export function useStudentProfile() {
     }
   };
 
-  useEffect(() => {
-    getUserData();
-  }, []);
+  useEffect(() => { getUserData(); }, []);
 
   return { user, loading, updateProfile };
 }

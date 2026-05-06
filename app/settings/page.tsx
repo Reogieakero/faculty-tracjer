@@ -10,7 +10,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import styles from './settings.module.css';
 
 export default function SettingsPage() {
-  const { student, loading, saveName, uploadAvatar, showSuccess } = useStudentSettings();
+  const { student, loading, saveName, uploadAvatar, showSuccess, setStudent } = useStudentSettings();
   const [isEditing, setIsEditing] = useState(false);
   const [tempName, setTempName] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -52,14 +52,9 @@ export default function SettingsPage() {
 
   const handleGenerateQR = async () => {
     setValidationError(null);
-    const missingFields = [];
-    if (!student?.avatar_url) missingFields.push("Avatar");
-    if (!student?.full_name) missingFields.push("Full Name");
-    if (!student?.program) missingFields.push("Program");
-    if (!student?.student_id) missingFields.push("Student ID");
-
-    if (missingFields.length > 0) {
-      setValidationError(`Incomplete Profile: Please add your ${missingFields.join(', ')}.`);
+    
+    if (!student?.student_id || !student?.full_name || !student?.program) {
+      setValidationError("Please ensure your Student ID, Full Name, and Program are set before generating.");
       return;
     }
 
@@ -67,7 +62,7 @@ export default function SettingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from('students').upsert({
+      const payload = {
         id: user.id,
         email: user.email,
         full_name: student.full_name,
@@ -75,12 +70,14 @@ export default function SettingsPage() {
         program: student.program,
         avatar_url: student.avatar_url,
         updated_at: new Date().toISOString()
-      });
+      };
+
+      const { error } = await supabase.from('students').upsert(payload);
 
       if (error) throw error;
       setShowQR(true);
     } catch (err: any) {
-      setValidationError(err.message || "Sync failed. Check your RLS policies.");
+      setValidationError(err.message || "Sync failed. Check database connection.");
     }
   };
 
@@ -160,7 +157,7 @@ export default function SettingsPage() {
                 {isEditing ? (
                   <input className={styles.editInputCenter} value={tempName} onChange={(e) => setTempName(e.target.value)} autoFocus />
                 ) : (
-                  <h2 className={styles.userName}>{student?.full_name}</h2>
+                  <h2 className={styles.userName}>{student?.full_name || 'Loading...'}</h2>
                 )}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
                   <div className={styles.statusBadge}>Active Student</div>
@@ -186,7 +183,7 @@ export default function SettingsPage() {
               <div className={styles.iconWrapper}><Hash size={18} /></div>
               <span className={styles.label}>Student ID</span>
             </div>
-            <p className={styles.value}>{student?.student_id}</p>
+            <p className={styles.value}>{student?.student_id || '---'}</p>
           </div>
 
           <div className={`${styles.card} ${styles.small}`}>
@@ -194,7 +191,7 @@ export default function SettingsPage() {
               <div className={styles.iconWrapper}><Mail size={18} /></div>
               <span className={styles.label}>Email Address</span>
             </div>
-            <p className={styles.value} style={{ fontSize: '0.85rem' }}>{student?.email}</p>
+            <p className={styles.value} style={{ fontSize: '0.85rem' }}>{student?.email || '---'}</p>
           </div>
 
           <div className={`${styles.card} ${styles.small}`}>
