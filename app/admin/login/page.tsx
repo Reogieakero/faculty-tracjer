@@ -93,7 +93,7 @@ export default function AdminLoginPage() {
             <span className={styles.accent}>Management Portal</span>
           </h2>
           <p className={styles.heroDesc}>
-            Authorized personnel access for CITY HIGH Integrated System.
+            Authorized personnel access for Liberalis Integrated System.
             Manage user roles, audit logs, and system configurations.
           </p>
         </div>
