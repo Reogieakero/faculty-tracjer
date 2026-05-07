@@ -15,6 +15,7 @@ export default function SettingsPage() {
   const [tempName, setTempName] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
+  const [qrValue, setQrValue] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (loading) return null;
@@ -52,7 +53,7 @@ export default function SettingsPage() {
 
   const handleGenerateQR = async () => {
     setValidationError(null);
-    
+
     if (!student?.student_id || !student?.full_name || !student?.program) {
       setValidationError("Please ensure your Student ID, Full Name, and Program are set before generating.");
       return;
@@ -73,20 +74,20 @@ export default function SettingsPage() {
       };
 
       const { error } = await supabase.from('students').upsert(payload);
-
       if (error) throw error;
+
+      setQrValue(JSON.stringify({
+        sid: student.student_id,
+        fn: student.full_name,
+        pg: student.program,
+        ts: new Date().toISOString()
+      }));
+
       setShowQR(true);
     } catch (err: any) {
       setValidationError(err.message || "Sync failed. Check database connection.");
     }
   };
-
-  const qrValue = JSON.stringify({
-    sid: student?.student_id,
-    fn: student?.full_name,
-    pg: student?.program,
-    ts: new Date().toISOString()
-  });
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -114,25 +115,24 @@ export default function SettingsPage() {
             <div className={styles.cardHeader}>
               <div className={styles.iconWrapper}><User size={18} /></div>
               <span className={styles.label}>Identity</span>
-              
               <div className={styles.cardActionsTopRight}>
                 {!isEditing ? (
-                  <button 
-                    onClick={() => { setTempName(student?.full_name || ''); setIsEditing(true); }} 
+                  <button
+                    onClick={() => { setTempName(student?.full_name || ''); setIsEditing(true); }}
                     className={styles.iconActionBtn}
                   >
                     <Edit3 size={16} />
                   </button>
                 ) : (
                   <div className={styles.actionGroup}>
-                    <button 
-                      onClick={async () => { await saveName(tempName); setIsEditing(false); }} 
+                    <button
+                      onClick={async () => { await saveName(tempName); setIsEditing(false); }}
                       className={styles.saveIconBtn}
                     >
                       <Check size={16} />
                     </button>
-                    <button 
-                      onClick={() => setIsEditing(false)} 
+                    <button
+                      onClick={() => setIsEditing(false)}
                       className={styles.cancelIconBtn}
                     >
                       <RotateCcw size={16} />
@@ -155,11 +155,16 @@ export default function SettingsPage() {
 
               <div className={styles.identityTextCenter}>
                 {isEditing ? (
-                  <input className={styles.editInputCenter} value={tempName} onChange={(e) => setTempName(e.target.value)} autoFocus />
+                  <input
+                    className={styles.editInputCenter}
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    autoFocus
+                  />
                 ) : (
                   <h2 className={styles.userName}>{student?.full_name || 'Loading...'}</h2>
                 )}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   <div className={styles.statusBadge}>Active Student</div>
                   {showSuccess && <span className={styles.confirmationMsg}>Changes saved</span>}
                 </div>
@@ -203,15 +208,15 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {showQR && (
+        {showQR && qrValue && (
           <div className={styles.modalOverlay} onClick={() => setShowQR(false)}>
             <div className={styles.qrCard} onClick={e => e.stopPropagation()}>
               <div className={styles.qrHeader}>
                 <h3 className={styles.qrTitle}>Digital Pass</h3>
-                <button onClick={() => setShowQR(false)} className={styles.closeIconBtn}><X size={20}/></button>
+                <button onClick={() => setShowQR(false)} className={styles.closeIconBtn}><X size={20} /></button>
               </div>
               <div className={styles.qrPlaceholder}>
-                <QRCodeSVG 
+                <QRCodeSVG
                   id="qr-pass"
                   value={qrValue}
                   size={200}

@@ -72,6 +72,10 @@ export function useAttendance() {
         const program = studentData?.program || null;
         setUserProgram(program);
 
+        const programFilter = program
+          ? `program.eq.All,program.eq.${program}`
+          : `program.eq.All`;
+
         const [scansRes, eventsRes] = await Promise.all([
           supabase
             .from('scan_logs')
@@ -89,14 +93,12 @@ export function useAttendance() {
             .eq('student_id', user.id)
             .order('scanned_at', { ascending: false }),
 
-          program
-            ? supabase
-                .from('events')
-                .select('id, title, location, event_date, start_time')
-                .or(`program.eq.All,program.eq.${program}`)
-                .lte('event_date', new Date().toISOString().split('T')[0])
-                .order('event_date', { ascending: false })
-            : Promise.resolve({ data: [], error: null }),
+          supabase
+            .from('events')
+            .select('id, title, location, event_date, start_time')
+            .eq('status', 'completed')
+            .or(programFilter)
+            .order('event_date', { ascending: false }),
         ]);
 
         const scannedEventIds = new Set(

@@ -39,7 +39,57 @@ export function useEvents() {
         .order('event_date', { ascending: false });
 
       if (error) throw error;
-      setEvents(data || []);
+
+      const now = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const staleIds: string[] = [];
+      const ongoingIds: string[] = [];
+
+      (data || []).forEach((e) => {
+        if (e.status === 'completed') return;
+
+        const eventDate = new Date(e.event_date);
+        eventDate.setHours(0, 0, 0, 0);
+
+        if (eventDate < today) {
+          staleIds.push(e.id);
+          return;
+        }
+
+        if (eventDate.getTime() === today.getTime() && e.start_time) {
+          const [hours, minutes] = e.start_time.split(':').map(Number);
+          const eventStart = new Date();
+          eventStart.setHours(hours, minutes, 0, 0);
+
+          if (now >= eventStart && e.status === 'upcoming') {
+            ongoingIds.push(e.id);
+          }
+        }
+      });
+
+      if (staleIds.length > 0) {
+        await supabase
+          .from('events')
+          .update({ status: 'completed', updated_at: new Date().toISOString() })
+          .in('id', staleIds);
+      }
+
+      if (ongoingIds.length > 0) {
+        await supabase
+          .from('events')
+          .update({ status: 'ongoing', updated_at: new Date().toISOString() })
+          .in('id', ongoingIds);
+      }
+
+      const patched = (data || []).map((e) => {
+        if (staleIds.includes(e.id)) return { ...e, status: 'completed' as const };
+        if (ongoingIds.includes(e.id)) return { ...e, status: 'ongoing' as const };
+        return e;
+      });
+
+      setEvents(patched);
     } catch (err) {
       console.error(err);
       setError('Failed to load events. Please try again.');
@@ -60,6 +110,8 @@ export function useEvents() {
 
   useEffect(() => {
     fetchEvents();
+    const interval = setInterval(fetchEvents, 60000);
+    return () => clearInterval(interval);
   }, [fetchEvents]);
 
   const filteredEvents = events.filter((e) =>

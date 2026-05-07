@@ -10,6 +10,7 @@
   --cal-blue-light: #dbeafe;
 }
 
+/* ─── Base Layout ─────────────────────────────────────────── */
 .wrapper {
   padding: 0;
   display: flex;
@@ -18,11 +19,14 @@
   height: auto;
 }
 
+/* ─── Page Header ─────────────────────────────────────────── */
 .pageHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .pageHeaderLeft {
@@ -64,8 +68,10 @@
   background: var(--cal-blue-light);
   padding: 5px 12px;
   border-radius: 20px;
+  white-space: nowrap;
 }
 
+/* ─── Calendar Card ───────────────────────────────────────── */
 .calendarCard {
   background: var(--cal-bg);
   border-radius: var(--cal-radius);
@@ -74,6 +80,7 @@
   flex-direction: column;
   height: auto;
   margin-bottom: 3rem;
+  overflow: hidden;
 }
 
 .calendarHeader {
@@ -82,6 +89,12 @@
   justify-content: space-between;
   padding: 20px 24px;
   border-bottom: 1px solid var(--cal-border);
+}
+
+.monthDisplay {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
 }
 
 .monthName {
@@ -98,6 +111,11 @@
   margin-left: 10px;
 }
 
+.calendarControls {
+  display: flex;
+  gap: 6px;
+}
+
 .navBtn {
   width: 32px;
   height: 32px;
@@ -105,8 +123,17 @@
   border: 1px solid var(--cal-border);
   background: #fff;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
 }
 
+.navBtn:hover {
+  background: #f1f5f9;
+}
+
+/* ─── Weekday Row ─────────────────────────────────────────── */
 .weekdayRow {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -123,6 +150,11 @@
   text-transform: uppercase;
 }
 
+/* Show full label by default, hide on mobile */
+.weekdayFull { display: inline; }
+.weekdayShort { display: none; }
+
+/* ─── Calendar Grid ───────────────────────────────────────── */
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -138,6 +170,7 @@
   flex-direction: column;
   gap: 8px;
   min-height: 120px;
+  transition: background 0.1s;
 }
 
 .dayCell:nth-child(7n) { border-right: none; }
@@ -180,8 +213,19 @@
   text-overflow: ellipsis;
 }
 
+.cellMoreBadge {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--cal-blue);
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--cal-blue-light);
+  align-self: flex-start;
+}
+
 .text_blue { color: var(--cal-blue); background: var(--cal-blue-light); }
 
+/* ─── Event Panel ─────────────────────────────────────────── */
 .eventPanel {
   padding: 24px;
   border-top: 1px solid var(--cal-border);
@@ -198,6 +242,12 @@
 
 .eventList { display: flex; flex-direction: column; gap: 8px; }
 
+.noEventsText {
+  font-size: 0.78rem;
+  color: var(--cal-text-tertiary);
+}
+
+/* ─── Event Row ───────────────────────────────────────────── */
 .eventRow {
   display: flex;
   gap: 12px;
@@ -207,14 +257,29 @@
   background: #fff;
 }
 
-.eventAccent { width: 3px; border-radius: 4px; }
+.eventAccent { width: 3px; border-radius: 4px; flex-shrink: 0; }
 .accent_blue { background: var(--cal-blue); }
 
-.eventRowTitle { font-size: 0.82rem; font-weight: 700; }
+.eventRowContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.eventRowTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .eventRowTime { font-size: 0.7rem; color: var(--cal-text-secondary); }
 
 .eventRow_blue { background: #f0f6ff; border-color: #dbeafe; }
 
+/* ─── Modal ───────────────────────────────────────────────── */
 .modalOverlay {
   position: fixed;
   top: 0; left: 0;
@@ -225,13 +290,19 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .modalContent {
   background: #fff;
   border-radius: var(--cal-radius);
-  width: 90%;
+  width: 100%;
   max-width: 400px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modalHeader {
@@ -240,9 +311,210 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .modalTitle { font-family: 'Unbounded', sans-serif; font-size: 1rem; font-weight: 800; }
-.closeBtn { background: none; border: none; cursor: pointer; color: var(--cal-text-secondary); }
-.modalBody { padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; }
-.eventRowProgram { font-size: 0.65rem; font-weight: 700; color: var(--cal-text-tertiary); margin-top: 4px; text-transform: uppercase; }
+.closeBtn { background: none; border: none; cursor: pointer; color: var(--cal-text-secondary); padding: 4px; }
+.modalBody {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.eventRowProgram {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--cal-text-tertiary);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ─── Tablet (≤768px) ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 1.1rem;
+  }
+
+  .pageIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .calendarHeader {
+    padding: 14px 16px;
+  }
+
+  .monthName {
+    font-size: 0.95rem;
+  }
+
+  .calendarGrid {
+    grid-auto-rows: minmax(80px, auto);
+  }
+
+  .dayCell {
+    padding: 8px 6px;
+    gap: 5px;
+    min-height: 80px;
+  }
+
+  .dayNumber {
+    font-size: 0.7rem;
+  }
+
+  .cellEventTitle {
+    font-size: 0.55rem;
+    padding: 2px 4px;
+  }
+
+  .eventPanel {
+    padding: 16px;
+  }
+
+  .weekdayLabel {
+    font-size: 0.6rem;
+    padding: 8px 0;
+  }
+
+  .modalContent {
+    max-width: 100%;
+  }
+}
+
+/* ─── Mobile (≤480px) ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Hide the inline panel — modal handles events on mobile */
+  .eventPanel {
+    display: none;
+  }
+
+  .wrapper {
+    gap: 1rem;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .todayBadge {
+    font-size: 0.68rem;
+    padding: 4px 10px;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.72rem;
+  }
+
+  /* Compact weekday labels: show 1-letter only */
+  .weekdayLabel {
+    font-size: 0.55rem;
+    padding: 6px 0;
+    letter-spacing: 0;
+  }
+
+  .calendarHeader {
+    padding: 12px 14px;
+  }
+
+  .monthName {
+    font-size: 0.85rem;
+  }
+
+  .yearLabel {
+    font-size: 0.75rem;
+    margin-left: 6px;
+  }
+
+  .navBtn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .calendarGrid {
+    grid-auto-rows: minmax(56px, auto);
+  }
+
+  .dayCell {
+    padding: 5px 4px;
+    gap: 3px;
+    min-height: 56px;
+  }
+
+  .dayNumber {
+    font-size: 0.62rem;
+  }
+
+  /* On mobile, hide event titles in cells — tap to see in modal */
+  .cellEventTitle {
+    display: none;
+  }
+
+  /* Single-letter weekday labels on tiny screens */
+  .weekdayFull { display: none; }
+  .weekdayShort { display: inline; }
+
+  .cellMoreBadge {
+    font-size: 0.5rem;
+    padding: 2px 4px;
+  }
+
+  .today .dayNumber {
+    width: 20px;
+    height: 20px;
+    font-size: 0.62rem;
+  }
+
+  .eventPanel {
+    padding: 14px;
+  }
+
+  .eventPanelTitle {
+    font-size: 0.65rem;
+  }
+
+  .eventRowTitle {
+    font-size: 0.78rem;
+  }
+
+  .eventRowTime {
+    font-size: 0.65rem;
+  }
+
+  /* Full-screen modal on small phones */
+  .modalOverlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modalContent {
+    border-radius: var(--cal-radius) var(--cal-radius) 0 0;
+    max-height: 80vh;
+    width: 100%;
+  }
+
+  .modalHeader {
+    padding: 16px 18px;
+  }
+
+  .modalTitle {
+    font-size: 0.88rem;
+  }
+
+  .modalBody {
+    padding: 16px 18px;
+  }
+
+  .calendarCard {
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+  }
+}

@@ -27,7 +27,9 @@ export default function SchedulePage() {
   if (loading) return null;
 
   const today = new Date();
-  const isCurrentMonth = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear();
+  const isCurrentMonth =
+    currentDate.getMonth() === today.getMonth() &&
+    currentDate.getFullYear() === today.getFullYear();
   const todayDate = today.getDate();
 
   const selectedEvents = events.filter(e => e.day === selectedDay);
@@ -35,7 +37,7 @@ export default function SchedulePage() {
   const handleDayClick = (day: number | null, count: number) => {
     if (!day) return;
     setSelectedDay(day);
-    if (count > 0) setShowModal(true);
+    setShowModal(true);
   };
 
   const handlePrevMonth = () => {
@@ -48,12 +50,17 @@ export default function SchedulePage() {
     setSelectedDay(null);
   };
 
+  const closeModal = () => setShowModal(false);
+
   return (
     <DashboardLayout sidebar={<Sidebar />}>
       <div className={styles.wrapper}>
+        {/* ── Page Header ── */}
         <section className={styles.pageHeader}>
           <div className={styles.pageHeaderLeft}>
-            <div className={styles.pageIcon}><CalendarDays size={20} /></div>
+            <div className={styles.pageIcon}>
+              <CalendarDays size={20} />
+            </div>
             <div>
               <h1 className={styles.pageTitle}>Academic Calendar</h1>
               <p className={styles.pageSubtitle}>
@@ -62,41 +69,54 @@ export default function SchedulePage() {
             </div>
           </div>
           <span className={styles.todayBadge}>
-            Today — {today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            Today —{' '}
+            {today.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </span>
         </section>
 
+        {/* ── Calendar Card ── */}
         <div className={styles.calendarCard}>
+          {/* Month navigation */}
           <div className={styles.calendarHeader}>
             <div className={styles.monthDisplay}>
               <span className={styles.monthName}>{monthName}</span>
               <span className={styles.yearLabel}>{year}</span>
             </div>
             <div className={styles.calendarControls}>
-              <button className={styles.navBtn} onClick={handlePrevMonth}>
+              <button className={styles.navBtn} onClick={handlePrevMonth} aria-label="Previous month">
                 <ChevronLeft size={16} />
               </button>
-              <button className={styles.navBtn} onClick={handleNextMonth}>
+              <button className={styles.navBtn} onClick={handleNextMonth} aria-label="Next month">
                 <ChevronRight size={16} />
               </button>
             </div>
           </div>
 
+          {/* Weekday labels */}
           <div className={styles.weekdayRow}>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-              <div key={d} className={styles.weekdayLabel}>{d}</div>
+              <div key={d} className={styles.weekdayLabel}>
+                {/* Show abbreviated label on mobile via CSS, full on desktop */}
+                <span className={styles.weekdayFull}>{d}</span>
+                <span className={styles.weekdayShort}>{d[0]}</span>
+              </div>
             ))}
           </div>
 
+          {/* Day grid */}
           <div className={styles.calendarGrid}>
             {calendarDays.map((day, i) => {
               const dayEvents = events.filter(e => e.day === day);
               return (
-                <CalendarDay 
-                  key={i} 
-                  day={day} 
-                  isToday={isCurrentMonth && day === todayDate} 
-                  isSelected={day === selectedDay} 
+                <CalendarDay
+                  key={i}
+                  day={day}
+                  isToday={isCurrentMonth && day === todayDate}
+                  isSelected={day === selectedDay}
                   isWeekend={i % 7 === 0 || i % 7 === 6}
                   dayEvents={dayEvents}
                   onClick={() => handleDayClick(day, dayEvents.length)}
@@ -105,33 +125,54 @@ export default function SchedulePage() {
             })}
           </div>
 
+          {/* Inline event panel (hidden on mobile — events shown in modal) */}
           <div className={styles.eventPanel}>
             <p className={styles.eventPanelTitle}>
-              {selectedDay ? `Events — ${monthName} ${selectedDay}` : 'Select a day with events'}
+              {selectedDay
+                ? `Events — ${monthName} ${selectedDay}`
+                : 'Select a day with events'}
             </p>
             <div className={styles.eventList}>
               {selectedEvents.length > 0 ? (
                 selectedEvents.map(ev => <EventRow key={ev.id} {...ev} />)
               ) : (
-                <p className={styles.noEventsText}>No events scheduled for this date.</p>
+                <p className={styles.noEventsText}>
+                  No events scheduled for this date.
+                </p>
               )}
             </div>
           </div>
         </div>
 
+        {/* ── Modal ── */}
         {showModal && (
-          <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
-            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+          <div className={styles.modalOverlay} onClick={closeModal}>
+            <div
+              className={styles.modalContent}
+              onClick={e => e.stopPropagation()}
+            >
               <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>Events for {monthName} {selectedDay}</h3>
-                <button className={styles.closeBtn} onClick={() => setShowModal(false)}>
+                <h3 className={styles.modalTitle}>
+                  Events for {monthName} {selectedDay}
+                </h3>
+                <button
+                  className={styles.closeBtn}
+                  onClick={closeModal}
+                  aria-label="Close"
+                >
                   <X size={18} />
                 </button>
               </div>
               <div className={styles.modalBody}>
-                {selectedEvents.map(ev => (
-                  <EventRow key={ev.id} {...ev} showProgram />
-                ))}
+                {selectedEvents.length > 0 ? (
+                  selectedEvents.map(ev => (
+                    <EventRow key={ev.id} {...ev} showProgram />
+                  ))
+                ) : (
+                  <p className={styles.noEventsText}>
+                    No events scheduled for this date.
+                  </p>
+                )}
               </div>
             </div>
           </div>

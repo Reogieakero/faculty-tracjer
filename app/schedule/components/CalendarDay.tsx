@@ -10,6 +10,11 @@ interface DayProps {
 }
 
 export function CalendarDay({ day, isToday, isSelected, isWeekend, dayEvents, onClick }: DayProps) {
+  // Show up to 2 events in the cell; the rest are summarised with "+N more"
+  const MAX_VISIBLE = 2;
+  const visibleEvents = dayEvents.slice(0, MAX_VISIBLE);
+  const hiddenCount = dayEvents.length - MAX_VISIBLE;
+
   return (
     <div
       onClick={onClick}
@@ -25,11 +30,14 @@ export function CalendarDay({ day, isToday, isSelected, isWeekend, dayEvents, on
         <>
           <span className={styles.dayNumber}>{day}</span>
           <div className={styles.cellEventList}>
-            {dayEvents.map(ev => (
+            {visibleEvents.map(ev => (
               <div key={ev.id} className={`${styles.cellEventTitle} ${styles.text_blue}`}>
                 {ev.title}
               </div>
             ))}
+            {hiddenCount > 0 && (
+              <span className={styles.cellMoreBadge}>+{hiddenCount} more</span>
+            )}
           </div>
         </>
       )}

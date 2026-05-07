@@ -18,6 +18,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .pageHeaderLeft {
@@ -35,6 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .pageTitle {
@@ -51,13 +54,13 @@
   margin-top: 3px;
 }
 
-/* Selector Tabs Styling from Updates Page */
 .tabGroup {
   display: flex;
   background: #f1f5f9;
   padding: 4px;
   border-radius: 10px;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .tabBtn {
@@ -72,12 +75,23 @@
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .activeTab {
   background: #ffffff;
   color: var(--att-blue);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tabCount {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 10px;
 }
 
 .statsGrid {
@@ -103,6 +117,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .bg_emerald { background: #ecfdf5; color: #10b981; }
@@ -133,6 +155,11 @@
 .tableHeader {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--att-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tableTitle {
@@ -142,7 +169,16 @@
   color: var(--att-text-main);
 }
 
-.tableWrapper { overflow-x: auto; }
+.recordCount {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--att-text-sub);
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.tableWrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 .table {
   width: 100%;
@@ -157,6 +193,7 @@
   font-weight: 800;
   text-transform: uppercase;
   color: var(--att-text-sub);
+  white-space: nowrap;
 }
 
 .table td {
@@ -173,8 +210,177 @@
   border-radius: 20px;
   font-size: 0.68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .status_present { background: #ecfdf5; color: #065f46; }
 .status_late { background: #fffbeb; color: #92400e; }
 .status_absent { background: #fff1f2; color: #9f1239; }
+
+.mobileCard {
+  display: none;
+}
+
+.mobileCardList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mobileAttRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--att-border);
+}
+
+.mobileAttTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mobileAttSubject {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--att-blue);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobileAttMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mobileAttMetaItem {
+  font-size: 0.72rem;
+  color: var(--att-text-sub);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .pageTitle {
+    font-size: 1.1rem;
+  }
+
+  .statsGrid {
+    gap: 0.75rem;
+  }
+
+  .statCard {
+    padding: 1rem;
+    gap: 12px;
+  }
+
+  .statIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .statValue {
+    font-size: 1rem;
+  }
+
+  .statLabel {
+    font-size: 0.7rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 0.75rem;
+    gap: 0.875rem;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.72rem;
+  }
+
+  .pageIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tabGroup {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tabBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 8px;
+    font-size: 0.65rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .statCard {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.875rem 0.75rem;
+    gap: 8px;
+  }
+
+  .statIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .statValue {
+    font-size: 1rem;
+  }
+
+  .statLabel {
+    font-size: 0.65rem;
+  }
+
+  .tableHeader {
+    padding: 1rem;
+  }
+
+  .tableTitle {
+    font-size: 0.8rem;
+  }
+
+  .tableWrapper {
+    display: none;
+  }
+
+  .mobileCard {
+    display: block;
+  }
+}

@@ -102,44 +102,73 @@ export default function AttendancePage() {
             <span className={styles.recordCount}>{filtered.length} record{filtered.length !== 1 ? 's' : ''}</span>
           </div>
 
-          <div className={styles.tableWrapper}>
-            {filtered.length === 0 ? (
-              <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
-                {activeTab === 'All'
-                  ? 'No attendance records yet. Scan into an event to get started.'
-                  : `No ${activeTab.toLowerCase()} records found.`}
+          {filtered.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
+              {activeTab === 'All'
+                ? 'No attendance records yet. Scan into an event to get started.'
+                : `No ${activeTab.toLowerCase()} records found.`}
+            </div>
+          ) : (
+            <>
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th><Calendar size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />Date</th>
+                      <th>Event</th>
+                      <th><MapPin size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />Location</th>
+                      <th><Clock size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />Time In</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((record) => (
+                      <tr key={record.id}>
+                        <td style={{ whiteSpace: 'nowrap' }}>{record.date}</td>
+                        <td className={styles.subjectCell}>{record.subject}</td>
+                        <td style={{ color: '#64748b', fontSize: '0.8rem' }}>{record.location ?? 'TBD'}</td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{record.time_in}</td>
+                        <td>
+                          <span className={`${styles.statusBadge} ${statusColor(record.status)}`}>
+                            {record.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            ) : (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th><Calendar size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />Date</th>
-                    <th>Event</th>
-                    <th><MapPin size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />Location</th>
-                    <th><Clock size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />Time In</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
+
+              <div className={styles.mobileCard}>
+                <div className={styles.mobileCardList}>
                   {filtered.map((record) => (
-                    <tr key={record.id}>
-                      <td style={{ whiteSpace: 'nowrap' }}>{record.date}</td>
-                      <td className={styles.subjectCell}>{record.subject}</td>
-                      <td style={{ color: '#64748b', fontSize: '0.8rem' }}>
-                        {record.location ?? 'TBD'}
-                      </td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{record.time_in}</td>
-                      <td>
+                    <div key={record.id} className={styles.mobileAttRow}>
+                      <div className={styles.mobileAttTop}>
+                        <span className={styles.mobileAttSubject}>{record.subject}</span>
                         <span className={`${styles.statusBadge} ${statusColor(record.status)}`}>
                           {record.status}
                         </span>
-                      </td>
-                    </tr>
+                      </div>
+                      <div className={styles.mobileAttMeta}>
+                        <span className={styles.mobileAttMetaItem}>
+                          <Calendar size={11} />
+                          {record.date}
+                        </span>
+                        <span className={styles.mobileAttMetaItem}>
+                          <Clock size={11} />
+                          {record.time_in}
+                        </span>
+                        <span className={styles.mobileAttMetaItem}>
+                          <MapPin size={11} />
+                          {record.location ?? 'TBD'}
+                        </span>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </DashboardLayout>

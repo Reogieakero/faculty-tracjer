@@ -32,6 +32,8 @@ interface ScanEntry {
 
 interface DashboardData {
   totalEvents: number;
+  allProgramEvents: number;
+  specificProgramEvents: number;
   attendedCount: number;
   absenceCount: number;
   auditFiles: AuditDocument[];
@@ -41,8 +43,11 @@ interface DashboardData {
 export default function DashboardPage() {
   const { user, loading, updateProfile } = useStudentProfile();
   const router = useRouter();
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [data, setData] = useState<DashboardData>({
     totalEvents: 0,
+    allProgramEvents: 0,
+    specificProgramEvents: 0,
     attendedCount: 0,
     absenceCount: 0,
     auditFiles: [],
@@ -68,11 +73,24 @@ export default function DashboardPage() {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) return;
 
-      const [eventsRes, auditsRes, scansRes] = await Promise.all([
+      setAuthUserId(authUser.id);
+
+      const programFilter = user.program
+        ? `program.eq.All,program.eq.${user.program}`
+        : `program.eq.All`;
+
+      const [allEventsRes, specificEventsRes, auditsRes, recentScansRes, attendedScanRes] = await Promise.all([
         supabase
           .from('events')
           .select('id', { count: 'exact', head: true })
-          .or(`program.eq.All${user.program ? `,program.eq.${user.program}` : ''}`),
+          .or('status.eq.completed,status.eq.ongoing,status.eq.upcoming')
+          .or(programFilter),
+
+        supabase
+          .from('events')
+          .select('id', { count: 'exact', head: true })
+          .or('status.eq.completed,status.eq.ongoing,status.eq.upcoming')
+          .or(programFilter),
 
         supabase
           .from('audit_documents')
@@ -90,21 +108,32 @@ export default function DashboardPage() {
           .eq('student_id', authUser.id)
           .order('scanned_at', { ascending: false })
           .limit(5),
+
+        supabase
+          .from('scan_logs')
+          .select(`
+            id,
+            events!inner ( id, status, program )
+          `)
+          .eq('student_id', authUser.id)
+          .or('events.status.eq.completed,events.status.eq.ongoing')
+          .or(programFilter, { referencedTable: 'events' }),
       ]);
 
-      const totalEvents = eventsRes.count ?? 0;
-      const attendedCount = scansRes.data?.length ?? 0;
+      const allProgramEvents = allEventsRes.count ?? 0;
+      const specificProgramEvents = specificEventsRes.count ?? 0;
+      const totalEvents = specificProgramEvents;
+      const attendedCount = attendedScanRes.data?.length ?? 0;
       const absenceCount = Math.max(0, totalEvents - attendedCount);
-      const attendancePercent = totalEvents > 0
-        ? Math.round((attendedCount / totalEvents) * 100)
-        : 0;
 
       setData({
         totalEvents,
+        allProgramEvents,
+        specificProgramEvents,
         attendedCount,
         absenceCount,
         auditFiles: (auditsRes.data as AuditDocument[]) || [],
-        recentScans: (scansRes.data as unknown as ScanEntry[]) || [],
+        recentScans: (recentScansRes.data as unknown as ScanEntry[]) || [],
       });
     } catch (err) {
       console.error('Dashboard data fetch error:', err);
@@ -116,6 +145,46 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!loading && user) fetchDashboardData();
   }, [loading, user, fetchDashboardData]);
+
+  useEffect(() => {
+    if (!authUserId) return;
+
+    const scanChannel = supabase
+      .channel('scan_logs_realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'scan_logs',
+          filter: `student_id=eq.${authUserId}`,
+        },
+        () => {
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    const eventsChannel = supabase
+      .channel('events_realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'events',
+        },
+        () => {
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(scanChannel);
+      supabase.removeChannel(eventsChannel);
+    };
+  }, [authUserId, fetchDashboardData, supabase]);
 
   const openOverlay = (filePath: string) => {
     const { data } = supabase.storage.from('documents').getPublicUrl(filePath);
@@ -148,29 +217,15 @@ export default function DashboardPage() {
   if (!user) return null;
 
   const stats = [
-    {
-      label: 'Total Events',
-      val: dataLoading ? '—' : data.totalEvents.toString(),
-      icon: <Users size={16} />,
-      desc: 'Events available for your program.',
-    },
-    {
-      label: 'Attended',
-      val: dataLoading ? '—' : `${attendancePercent}%`,
-      icon: <CheckCircle size={16} />,
-      desc: `${data.attendedCount} events attended.`,
-    },
-    {
-      label: 'Absences',
-      val: dataLoading ? '—' : data.absenceCount.toString().padStart(2, '0'),
-      icon: <XCircle size={16} />,
-      desc: 'Events not attended.',
-    },
+    
+    
     {
       label: 'Student ID',
       val: user?.studentId || '—',
       icon: <IdCard size={16} />,
       desc: 'Your official Student ID.',
+      subLabel: undefined,
+      breakdown: undefined,
     },
   ];
 
@@ -195,7 +250,6 @@ export default function DashboardPage() {
               <p className={styles.userEmail}>{user?.email}</p>
             </div>
           </div>
-          <p className={styles.sessionInfo}>PolyTrack Analytics • 2026</p>
         </header>
 
         <section className={styles.statsGrid}>
@@ -206,6 +260,8 @@ export default function DashboardPage() {
               val={stat.val}
               icon={stat.icon}
               description={stat.desc}
+              subLabel={stat.subLabel}
+              breakdown={stat.breakdown}
             />
           ))}
         </section>
@@ -296,12 +352,12 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <section className={styles.announcementCard} style={{ marginTop: '1.25rem', gridColumn: 'span 12' }}>
+        {/* <section className={styles.announcementCard} style={{ marginTop: '1.25rem', gridColumn: 'span 12' }}>
           <AttendancePieChart
             totalEvents={data.totalEvents}
             attendancePercent={attendancePercent}
           />
-        </section>
+        </section> */}
       </div>
 
       {selectedPdf && (

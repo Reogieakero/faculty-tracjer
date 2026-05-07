@@ -7,7 +7,9 @@ export function EventRow({ title, time, program, showProgram }: any) {
       <div className={styles.eventRowContent}>
         <span className={styles.eventRowTitle}>{title}</span>
         <span className={styles.eventRowTime}>{time}</span>
-        {showProgram && <div className={styles.eventRowProgram}>Program: {program}</div>}
+        {showProgram && program && (
+          <div className={styles.eventRowProgram}>Program: {program}</div>
+        )}
       </div>
     </div>
   );
