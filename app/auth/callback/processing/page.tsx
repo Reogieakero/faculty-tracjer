@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react'; // 1. Added Suspense
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { sileo } from 'sileo';
 
-export default function AuthCallbackProcessing() {
+// 2. Move your logic into a sub-component
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState('Verifying account...');
@@ -48,6 +49,16 @@ export default function AuthCallbackProcessing() {
   }, [router, searchParams]);
 
   return (
+    <div style={{ textAlign: 'center' }}>
+      <p style={{ marginBottom: '15px', fontSize: '1.1rem', fontWeight: '500' }}>{status}</p>
+      <div className="loader"></div>
+    </div>
+  );
+}
+
+// 3. Keep this as the default export and wrap the content in Suspense
+export default function AuthCallbackProcessing() {
+  return (
     <div style={{
       display: 'flex',
       alignItems: 'center',
@@ -56,10 +67,10 @@ export default function AuthCallbackProcessing() {
       background: '#f8fafc',
       color: '#1e293b',
     }}>
-      <div style={{ textAlign: 'center' }}>
-        <p style={{ marginBottom: '15px', fontSize: '1.1rem', fontWeight: '500' }}>{status}</p>
-        <div className="loader"></div>
-      </div>
+      <Suspense fallback={<p>Loading...</p>}>
+        <AuthCallbackContent />
+      </Suspense>
+
       <style jsx>{`
         .loader {
           border: 3px solid rgba(13, 11, 80, 0.1);
