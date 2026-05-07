@@ -217,8 +217,34 @@ export default function DashboardPage() {
   if (!user) return null;
 
   const stats = [
-    
-    
+    {
+      label: 'Present',
+      val: dataLoading ? '—' : data.attendedCount.toString(),
+      icon: <Users size={16} />,
+      desc: `${data.attendedCount} out of ${data.totalEvents} events attended.`,
+      subLabel: dataLoading ? '' : `out of ${data.totalEvents} events`,
+      breakdown: {
+        allProgram: data.allProgramEvents,
+        specificProgram: data.specificProgramEvents,
+        programLabel: user?.program ?? 'Your Program',
+      },
+    },
+    {
+      label: 'Attended',
+      val: dataLoading ? '—' : `${attendancePercent}%`,
+      icon: <CheckCircle size={16} />,
+      desc: `${data.attendedCount} events attended.`,
+      subLabel: undefined,
+      breakdown: undefined,
+    },
+    {
+      label: 'Absences',
+      val: dataLoading ? '—' : data.absenceCount.toString().padStart(2, '0'),
+      icon: <XCircle size={16} />,
+      desc: 'Events not attended.',
+      subLabel: undefined,
+      breakdown: undefined,
+    },
     {
       label: 'Student ID',
       val: user?.studentId || '—',
@@ -250,6 +276,7 @@ export default function DashboardPage() {
               <p className={styles.userEmail}>{user?.email}</p>
             </div>
           </div>
+          <p className={styles.sessionInfo}>PolyTrack Analytics • 2026</p>
         </header>
 
         <section className={styles.statsGrid}>
@@ -352,12 +379,12 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        {/* <section className={styles.announcementCard} style={{ marginTop: '1.25rem', gridColumn: 'span 12' }}>
+        <section className={styles.announcementCard} style={{ marginTop: '1.25rem', gridColumn: 'span 12' }}>
           <AttendancePieChart
             totalEvents={data.totalEvents}
             attendancePercent={attendancePercent}
           />
-        </section> */}
+        </section>
       </div>
 
       {selectedPdf && (
