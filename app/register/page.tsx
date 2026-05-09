@@ -75,19 +75,19 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignUp = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: { prompt: 'select_account' },
-        },
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      sileo.error({ title: "Google Auth Error", description: error.message });
-    }
-  };
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?type=register`,
+        queryParams: { prompt: 'select_account' },
+      },
+    });
+    if (error) throw error;
+  } catch (error: any) {
+    sileo.error({ title: "Google Auth Error", description: error.message });
+  }
+};
 
   const handleManualSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
