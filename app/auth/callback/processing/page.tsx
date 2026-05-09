@@ -1,51 +1,62 @@
 'use client';
-import { useEffect, useState, Suspense } from 'react'; // 1. Added Suspense
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { sileo } from 'sileo';
 
-// 2. Move your logic into a sub-component
 function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState('Verifying account...');
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      const type = searchParams.get('type');
+    const type = searchParams.get('type');
 
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Wait for an actual sign in event
+      if (event === 'SIGNED_IN' && session) {
+        const createdAt = new Date(session.user.created_at).getTime();
+        const lastSignIn = new Date(session.user.last_sign_in_at!).getTime();
+        
+        // Allow a 5 second window to account for timing differences
+        const isNewUser = Math.abs(createdAt - lastSignIn) < 5000;
 
-        if (session) {
-          const isNewUser = session.user.created_at === session.user.last_sign_in_at;
-
-          if (type === 'login' && isNewUser) {
-            sileo.error({
-              title: "Access Denied",
-              description: "This Google account is not registered. Please sign up first.",
-            });
-            await supabase.auth.signOut();
-            return router.push('/register');
-          }
-
-          if (isNewUser) {
-            setStatus('Account created successfully!');
-            await supabase.auth.signOut();
-            return router.push('/login?message=Successfully signed up with Google. Please log in to continue.');
-          }
-
-          router.push('/dashboard');
-        } else {
-          router.push('/login');
+        if (type === 'login' && isNewUser) {
+          sileo.error({
+            title: "Access Denied",
+            description: "This Google account is not registered. Please sign up first.",
+          });
+          await supabase.auth.signOut();
+          subscription.unsubscribe();
+          return router.push('/register');
         }
-      } catch (error) {
+
+        if (isNewUser) {
+          setStatus('Account created successfully!');
+          await supabase.auth.signOut();
+          subscription.unsubscribe();
+          return router.push('/login?message=Successfully signed up with Google. Please log in to continue.');
+        }
+
+        subscription.unsubscribe();
+        router.push('/dashboard');
+
+      } else if (event === 'SIGNED_OUT') {
+        subscription.unsubscribe();
         router.push('/login');
       }
-    };
+    });
 
-    handleAuthCallback();
+    // Fallback: if no auth event fires after 8 seconds, redirect to login
+    const timeout = setTimeout(() => {
+      subscription.unsubscribe();
+      router.push('/login');
+    }, 8000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, [router, searchParams]);
 
   return (
@@ -56,7 +67,6 @@ function AuthCallbackContent() {
   );
 }
 
-// 3. Keep this as the default export and wrap the content in Suspense
 export default function AuthCallbackProcessing() {
   return (
     <div style={{
