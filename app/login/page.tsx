@@ -58,10 +58,6 @@ export default function LoginPage() {
           <circle className={styles.constelNode} cx="550" cy="200" r="3" />
         </svg>
 
-        <div className={styles.brand}>
-          <div className={styles.brandIcon}><LayoutDashboard size={18} /></div>
-          <span className={styles.brandName}>PolyTrack</span>
-        </div>
 
         <div className={styles.heroContent}>
           <h2 className={styles.heroTitle}>

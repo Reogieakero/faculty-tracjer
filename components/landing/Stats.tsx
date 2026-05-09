@@ -2,8 +2,8 @@ import styles from './Stats.module.css';
 
 const stats = [
   { value: '98%', label: 'Attendance Accuracy', desc: 'Real-time tracking precision' },
-  { value: '3,200+', label: 'Students Tracked', desc: 'Across all programs' },
-  { value: '12', label: 'Departments', desc: 'Using PolyTrack daily' },
+  { value: '300+', label: 'Students Tracked', desc: 'Across all programs' },
+  { value: '3', label: 'Programs', desc: 'Using Liberalis Tracker daily' },
   { value: '4.9★', label: 'Faculty Rating', desc: 'Average satisfaction score' },
 ];
 
